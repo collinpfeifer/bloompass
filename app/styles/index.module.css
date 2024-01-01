@@ -1,0 +1,60 @@
+.hero {
+  position: relative;
+  background-image: url(https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1544&q=80);
+  background-size: cover;
+  background-position: center;
+  min-height: 100%;
+  min-width: 100%;
+}
+
+.container {
+  min-height: calc(100dvh - var(--mantine-spacing-xl) - 64.3px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-bottom: calc(var(--mantine-spacing-xl) * 6);
+  z-index: 1;
+  position: relative;
+}
+
+.title {
+  color: var(--mantine-color-white);
+  font-size: rem(70);
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.description {
+  color: var(--mantine-color-white);
+  max-width: 600;
+}
+
+.control {
+  margin-top: calc(var(--mantine-spacing-xl) * 1.5);
+}
+
+@media (max-width: $mantine-breakpoint-sm) {
+  .container {
+    height: rem(500);
+    padding-bottom: `calc(var(--mantine-spacing-xl) * 3);
+  }
+  .description {
+    max-width: 100%;
+    font-size: var(--mantine-font-size-sm);
+  }
+  .control {
+    width: 100%;
+  }
+  .title {
+    font-size: rem(40);
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: $mantine-breakpoint-xs) {
+  .title {
+    font-size: rem(28);
+    line-height: 1.3;
+  }
+}

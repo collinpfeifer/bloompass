@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String   @id @default(uuid())
+  email              String   @unique
+  password           String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  stripeAccountId    String?
+  onboardingComplete Boolean  @default(false)
+  tickets            Ticket[]
+}
+
+model Ticket {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  dateTime    DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  price       Int
+  link        String    @unique
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  hashtags    Hashtag[] @relation("HashtagToTicket")
+}
+
+model Hashtag {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String   @unique
+  tickets   Ticket[] @relation("HashtagToTicket")
+}
