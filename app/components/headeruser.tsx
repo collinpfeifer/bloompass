@@ -18,19 +18,14 @@ import { useDisclosure } from '@mantine/hooks';
 import {
   IconLogout,
   IconHeart,
-  IconStar,
-  IconMessage,
   IconSettings,
-  IconPlayerPause,
-  IconTrash,
-  IconSwitchHorizontal,
   IconChevronDown,
 } from '@tabler/icons-react';
 import classes from '../styles/headeruser.module.css';
 import { Hashtag, User } from '@prisma/client';
 import { useForm } from '@mantine/form';
 import { DateTimePicker } from '@mantine/dates';
-import { Form, useActionData } from '@remix-run/react';
+import { Form, Link, useActionData } from '@remix-run/react';
 import HashtagInput from './hashtaginput';
 
 export default function HeaderUser({
@@ -79,7 +74,7 @@ export default function HeaderUser({
             formData.append('hashtags', JSON.stringify(values.hashtags));
             formData.append('newHashtags', JSON.stringify(values.newHashtags));
 
-            await fetch('/feed', {
+            await fetch('/api/tickets/create', {
               method: 'POST',
               body: formData,
             });
@@ -145,7 +140,7 @@ export default function HeaderUser({
       <div className={classes.header}>
         <Container className={classes.mainSection} size='md'>
           <Group justify='space-between'>
-            <Button onClick={() => modalOpen()}>Add Ticket</Button>
+            {user && <Button onClick={() => modalOpen()}>Add Ticket</Button>}
             <Burger
               opened={opened}
               onClick={toggle}
@@ -153,65 +148,73 @@ export default function HeaderUser({
               size='sm'
             />
 
-            <Menu
-              width={260}
-              position='bottom-end'
-              transitionProps={{ transition: 'pop-top-right' }}
-              onClose={() => setUserMenuOpened(false)}
-              onOpen={() => setUserMenuOpened(true)}
-              withinPortal>
-              <Menu.Target>
-                <UnstyledButton
-                  className={cx(classes.user, {
-                    [classes.userActive]: userMenuOpened,
-                  })}>
-                  <Group gap={7}>
-                    <Text fw={500} size='sm' lh={1} mr={3}>
-                      {user.email}
-                    </Text>
-                    <IconChevronDown
-                      style={{ width: rem(12), height: rem(12) }}
-                      stroke={1.5}
-                    />
-                  </Group>
-                </UnstyledButton>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item
-                  leftSection={
-                    <IconHeart
-                      style={{ width: rem(16), height: rem(16) }}
-                      color={theme.colors.red[6]}
-                      stroke={1.5}
-                    />
-                  }>
-                  Tickets
-                </Menu.Item>
-
-                <Menu.Label>Settings</Menu.Label>
-                <Menu.Item
-                  leftSection={
-                    <IconSettings
-                      style={{ width: rem(16), height: rem(16) }}
-                      stroke={1.5}
-                    />
-                  }>
-                  Account settings
-                </Menu.Item>
-                <Form action='/logout'>
+            {user ? (
+              <Menu
+                width={260}
+                position='bottom-end'
+                transitionProps={{ transition: 'pop-top-right' }}
+                onClose={() => setUserMenuOpened(false)}
+                onOpen={() => setUserMenuOpened(true)}
+                withinPortal>
+                <Menu.Target>
+                  <UnstyledButton
+                    className={cx(classes.user, {
+                      [classes.userActive]: userMenuOpened,
+                    })}>
+                    <Group gap={7}>
+                      <Text fw={500} size='sm' lh={1} mr={3}>
+                        {user.email}
+                      </Text>
+                      <IconChevronDown
+                        style={{ width: rem(12), height: rem(12) }}
+                        stroke={1.5}
+                      />
+                    </Group>
+                  </UnstyledButton>
+                </Menu.Target>
+                <Menu.Dropdown>
                   <Menu.Item
                     leftSection={
-                      <IconLogout
+                      <IconHeart
+                        style={{ width: rem(16), height: rem(16) }}
+                        color={theme.colors.red[6]}
+                        stroke={1.5}
+                      />
+                    }>
+                    Tickets
+                  </Menu.Item>
+
+                  <Menu.Label>Settings</Menu.Label>
+                  <Menu.Item
+                    leftSection={
+                      <IconSettings
                         style={{ width: rem(16), height: rem(16) }}
                         stroke={1.5}
                       />
-                    }
-                    type='submit'>
-                    Logout
+                    }>
+                    Account settings
                   </Menu.Item>
-                </Form>
-              </Menu.Dropdown>
-            </Menu>
+                  <Form action='/logout'>
+                    <Menu.Item
+                      leftSection={
+                        <IconLogout
+                          style={{ width: rem(16), height: rem(16) }}
+                          stroke={1.5}
+                        />
+                      }
+                      type='submit'>
+                      Logout
+                    </Menu.Item>
+                  </Form>
+                </Menu.Dropdown>
+              </Menu>
+            ) : (
+              <Button>
+                <Text fw={500} size='sm' lh={1} mr={3}>
+                  <Link to='/login'>Login</Link>
+                </Text>
+              </Button>
+            )}
           </Group>
         </Container>
       </div>

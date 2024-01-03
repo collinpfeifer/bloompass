@@ -15,7 +15,7 @@ import type {
   MetaFunction,
 } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
-import { Form, useActionData, useSearchParams } from '@remix-run/react';
+import { Form, Link, useActionData, useSearchParams } from '@remix-run/react';
 import { z } from 'zod';
 import { PasswordStrength } from '../components/passwordstrength';
 import { signUp } from '../models/user.server';
@@ -163,7 +163,7 @@ export default function SignUp() {
               type='button'
               c='dimmed'
               className='md:text-md text-xl lg:text-sm'>
-              Already have a user account? Login
+              <Link to='/login'>Already have a user account? Login</Link>
             </Anchor>
             <Button type='submit' radius='xl' style={{ background: 'green' }}>
               <Text className='text-xl md:text-xl lg:text-lg'>Sign Up</Text>

@@ -15,7 +15,7 @@ import type {
   MetaFunction,
 } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
-import { Form, useActionData, useSearchParams } from '@remix-run/react';
+import { Form, Link, useActionData, useSearchParams } from '@remix-run/react';
 import { z } from 'zod';
 import { login } from '../models/user.server';
 import { createSession, getUser } from '../session.server';
@@ -106,56 +106,58 @@ export default function Login() {
   });
 
   return (
-    <Paper radius='md' p='xl' withBorder pos='relative'>
-      <Stack>
-        <Text className='md:text2-xl text-4xl lg:text-xl' fw={500}>
-          Welcome to Bloompass, login with
-        </Text>
+    <Stack justify='center'>
+      <Paper radius='md' p='xl' withBorder pos='relative'>
+        <Stack>
+          <Text className='md:text2-xl text-4xl lg:text-xl' fw={500}>
+            Welcome to Bloompass, login with
+          </Text>
 
-        <Form method='post'>
-          <Stack>
-            <TextInput
-              label='Email'
-              name='email'
-              type='email'
-              size={isDesktop ? 'md' : 'xl'}
-              withAsterisk
-              required
-              error={data?.errors?.email || form.errors.email}
-              placeholder='Your email'
-              radius='md'
-              {...form.getInputProps('email')}
-            />
-            {redirectTo && (
-              <input type='hidden' name='redirectTo' value={redirectTo} />
-            )}
+          <Form method='post'>
+            <Stack>
+              <TextInput
+                label='Email'
+                name='email'
+                type='email'
+                size={isDesktop ? 'md' : 'xl'}
+                withAsterisk
+                required
+                error={data?.errors?.email || form.errors.email}
+                placeholder='Your email'
+                radius='md'
+                {...form.getInputProps('email')}
+              />
+              {redirectTo && (
+                <input type='hidden' name='redirectTo' value={redirectTo} />
+              )}
 
-            <PasswordInput
-              label='Password'
-              name='password'
-              required
-              size={isDesktop ? 'md' : 'xl'}
-              withAsterisk
-              error={data?.errors?.password || form.errors.password}
-              placeholder='Your password'
-              radius='md'
-              {...form.getInputProps('password')}
-            />
-          </Stack>
-          <Group justify='apart' mt='xl'>
-            <Anchor
-              component='button'
-              type='button'
-              c='dimmed'
-              className='md:text-md text-xl lg:text-sm'>
-              Don&apos;t have an account? Sign up
-            </Anchor>
-            <Button type='submit' radius='xl' style={{ background: 'green' }}>
-              <Text className='text-xl md:text-xl lg:text-lg'>Login</Text>
-            </Button>
-          </Group>
-        </Form>
-      </Stack>
-    </Paper>
+              <PasswordInput
+                label='Password'
+                name='password'
+                required
+                size={isDesktop ? 'md' : 'xl'}
+                withAsterisk
+                error={data?.errors?.password || form.errors.password}
+                placeholder='Your password'
+                radius='md'
+                {...form.getInputProps('password')}
+              />
+            </Stack>
+            <Group justify='apart' mt='xl'>
+              <Anchor
+                component='button'
+                type='button'
+                c='dimmed'
+                className='md:text-md text-xl lg:text-sm'>
+                <Link to='/signup'>Don&apos;t have an account? Sign up</Link>
+              </Anchor>
+              <Button type='submit' radius='xl' style={{ background: 'green' }}>
+                <Text className='text-xl md:text-xl lg:text-lg'>Login</Text>
+              </Button>
+            </Group>
+          </Form>
+        </Stack>
+      </Paper>
+    </Stack>
   );
 }

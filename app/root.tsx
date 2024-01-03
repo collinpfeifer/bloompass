@@ -48,6 +48,7 @@ export default function App() {
         <MantineProvider theme={theme}>
           <Stack
             align='center'
+            justify='center'
             style={() => ({
               background:
                 'linear-gradient(45deg, rgba(27,29,84,1) 0%, rgba(69,252,141,1) 100%)',

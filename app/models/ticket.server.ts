@@ -55,7 +55,7 @@ export async function getTickets() {
   return json(tickets);
 }
 
-export async function searchTickets({ query }: { query: string }) {
+export async function searchTicketsByQuery({ query }: { query: string }) {
   const tickets = await prisma.ticket.findMany({
     orderBy: {
       dateTime: 'desc',
@@ -80,6 +80,74 @@ export async function searchTickets({ query }: { query: string }) {
               title: {
                 contains: query,
                 mode: 'insensitive',
+              },
+            },
+          },
+        },
+      ],
+    },
+    include: { hashtags: true },
+  });
+  return json(tickets);
+}
+
+export async function searchTicketsByHashtags({
+  hashtags,
+}: {
+  hashtags: string[];
+}) {
+  const tickets = await prisma.ticket.findMany({
+    orderBy: {
+      dateTime: 'desc',
+    },
+    where: {
+      hashtags: {
+        some: {
+          title: {
+            in: hashtags,
+          },
+        },
+      },
+    },
+    include: { hashtags: true },
+  });
+  return json(tickets);
+}
+
+export async function searchTicketsByQueryAndHashtags({
+  query,
+  hashtags,
+}: {
+  query: string;
+  hashtags: string[];
+}) {
+  const tickets = await prisma.ticket.findMany({
+    orderBy: {
+      dateTime: 'desc',
+    },
+    where: {
+      AND: [
+        {
+          OR: [
+            {
+              title: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+            {
+              description: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        },
+        {
+          hashtags: {
+            some: {
+              title: {
+                in: hashtags,
               },
             },
           },
