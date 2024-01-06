@@ -68,8 +68,39 @@ export async function getUserById({ id }: { id: string }) {
   const user = await prisma.user.findUnique({
     where: { id },
   });
+  return json(user);
+}
+
+export async function updateUser({
+  id,
+  email,
+  stripeAccountId,
+  onboardingComplete,
+  banned,
+}: {
+  id: string;
+  email?: string;
+  stripeAccountId?: string;
+  onboardingComplete?: boolean;
+  banned?: boolean;
+}) {
+  const user = await prisma.user.update({
+    where: { id },
+    data: {
+      email,
+      stripeAccountId,
+      onboardingComplete,
+      banned,
+    },
+  });
   if (!user) {
     return json({ error: `No user found with that id` }, { status: 400 });
   }
-  return json({ id: user.id, email: user.email });
+  return json({
+    id: user.id,
+    email: user.email,
+    stripeAccountId: user.stripeAccountId,
+    onboardingComplete: user.onboardingComplete,
+    banned: user.banned,
+  });
 }

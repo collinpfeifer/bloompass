@@ -1,10 +1,18 @@
-import { ActionFunction, ActionFunctionArgs, json } from '@remix-run/node';
+import {
+  ActionFunction,
+  ActionFunctionArgs,
+  json,
+  redirect,
+} from '@remix-run/node';
 import { z } from 'zod';
 import { createTicket } from '../models/ticket.server';
+import { requireUser } from '../session.server';
 
 export const action: ActionFunction = async ({
   request,
 }: ActionFunctionArgs) => {
+  const user = await requireUser(request);
+  if (!user.onboardingComplete) return redirect('/api/stripe/authorize');
   const formData = Object.fromEntries(await request.formData());
 
   const stringToJSONSchema = z.string().transform((str, ctx) => {

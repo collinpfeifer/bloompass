@@ -58,7 +58,13 @@ export async function requireUser(
   const userId = await requireUserId(request, redirectTo);
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, email: true },
+    select: {
+      id: true,
+      email: true,
+      stripeAccountId: true,
+      onboardingComplete: true,
+      banned: true,
+    },
   });
   if (!user) {
     const searchParams = new URLSearchParams([['redirectTo', redirectTo]]);
@@ -83,11 +89,16 @@ export async function getUser(request: Request) {
   if (typeof userId !== 'string') {
     return null;
   }
-
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true },
+      select: {
+        id: true,
+        email: true,
+        stripeAccountId: true,
+        onboardingComplete: true,
+        banned: true,
+      },
     });
     return user;
   } catch {

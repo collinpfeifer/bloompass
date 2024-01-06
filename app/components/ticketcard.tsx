@@ -3,18 +3,25 @@ import { Card, Text, Group, Badge, Button } from '@mantine/core';
 import classes from '../styles/ticket.module.css';
 import { Hashtag } from '@prisma/client';
 import { convertDateString } from '../utils/convertDateString';
+import { Form, Link } from '@remix-run/react';
 
 export default function TicketCard({
+  id,
   title,
   dateTime,
   description,
   price,
+  sellerUserId,
+  userId,
   hashtags,
 }: {
+  id: string;
   title: string;
   price: number;
   description: string | null;
   dateTime: string;
+  sellerUserId: string;
+  userId: string;
   hashtags: Hashtag[] | null;
 }) {
   const { dayOfWeek, day, month, year, time } = convertDateString(dateTime);
@@ -51,10 +58,23 @@ export default function TicketCard({
               {`$${price}`}
             </Text>
           </div>
-
-          <Button radius='xl' style={{ flex: 1 }}>
-            Buy now
-          </Button>
+          {sellerUserId !== userId ? (
+            <Form method='post' action='/api/stripe/buy'>
+              <input type='hidden' name='ticketId' value={id} />
+              <input type='hidden' name='buyerUserId' value={userId} />
+              <Button type='submit' radius='xl' style={{ flex: 1 }}>
+                Buy now
+              </Button>
+            </Form>
+          ) : (
+            <Button>
+              <Link
+                style={{ textDecoration: 'none', color: 'white' }}
+                to='/edit'>
+                Edit Ticket
+              </Link>
+            </Button>
+          )}
         </Group>
       </Card.Section>
     </Card>

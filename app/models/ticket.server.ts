@@ -30,7 +30,7 @@ export async function createTicket({
       price,
       dateTime,
       link,
-      userId,
+      sellerUserId: userId,
       hashtags: {
         connect: [...hashtags.map((hashtag) => ({ id: hashtag.id }))],
         create: [...newHashtags.map((hashtag) => ({ title: hashtag.title }))],
@@ -165,12 +165,14 @@ export async function updateTicket({
   title,
   description,
   hashtags,
+  buyerUserId,
   newHashtags,
 }: {
   request: Request;
   id: string;
   title: string;
   description: string;
+  buyerUserId: string | undefined;
   hashtags: Hashtag[];
   newHashtags: Hashtag[];
 }) {
@@ -180,6 +182,7 @@ export async function updateTicket({
     data: {
       title,
       description,
+      buyerUserId,
       hashtags: {
         connect: [...hashtags.map((hashtag) => ({ id: hashtag.id }))],
         create: [...newHashtags.map((hashtag) => ({ title: hashtag.title }))],

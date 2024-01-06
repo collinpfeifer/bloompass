@@ -8,14 +8,27 @@ import {
 } from '@remix-run/node';
 import { getUser } from '../session.server';
 import { getTickets, searchTicketsByQuery } from '../models/ticket.server';
-import { Form, useLoaderData } from '@remix-run/react';
-import { Box, Button, Group, Stack, TextInput } from '@mantine/core';
+import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
+import {
+  Box,
+  Button,
+  Group,
+  Modal,
+  NumberInput,
+  Stack,
+  TextInput,
+} from '@mantine/core';
 import { getHashtags } from '../models/hashtag.server';
-import type { Ticket } from '@prisma/client';
+import type { Hashtag, Ticket } from '@prisma/client';
 import TicketCard from '../components/ticketcard';
 import HeaderUser from '../components/headeruser';
 import { z } from 'zod';
 import { useForm } from '@mantine/form';
+import HashtagInput from '../components/hashtaginput';
+import { DateTimePicker } from '@mantine/dates';
+import { useDisclosure } from '@mantine/hooks';
+import _ from 'lodash';
+import { useState } from 'react';
 
 export const loader: LoaderFunction = async ({
   request,
@@ -42,7 +55,6 @@ export const action: ActionFunction = async ({
   request,
 }: ActionFunctionArgs) => {
   const formData = Object.fromEntries(await request.formData());
-  console.log('form', formData);
   const searchSchema = z.object({
     query: z.string().min(1).max(500),
   });
@@ -68,6 +80,25 @@ export default function Feed() {
     },
   });
 
+  const data = useActionData();
+
+  const [modalOpened, { open: modalOpen, close: modalClose }] =
+    useDisclosure(false);
+  const [selected, setSelected] = useState<Hashtag[]>([]);
+
+  const modalForm = useForm({
+    initialValues: {
+      title: '',
+      description: '',
+      dateTime: '',
+      price: undefined,
+      link: '',
+      hashtags: [],
+      newHashtags: [],
+    },
+    validate: {},
+  });
+
   // limit tickets to 30 of the most recently created / closest to starting / cheapest
 
   // search will return all tickets that match the query sorted descending from the starting time
@@ -75,9 +106,93 @@ export default function Feed() {
 
   return (
     <>
-      <HeaderUser hashtags={hashtags} user={user} />
+      <Modal opened={modalOpened} onClose={modalClose} title='Add Ticket'>
+        <Form
+          onSubmit={modalForm.onSubmit(async (values) => {
+            const formData = new FormData();
+            formData.append('title', values.title);
+            formData.append('description', values.description);
+            formData.append('dateTime', values.dateTime);
+            formData.append('price', String(values.price));
+            formData.append('link', values.link);
+            formData.append('hashtags', JSON.stringify(values.hashtags));
+            formData.append('newHashtags', JSON.stringify(values.newHashtags));
+
+            await fetch('/api/tickets/create', {
+              method: 'POST',
+              body: formData,
+            });
+          })}>
+          <TextInput
+            label='Title'
+            placeholder='Title'
+            required
+            error={data?.errors?.title || form.errors.title}
+            {...form.getInputProps('title')}
+          />
+          <TextInput
+            label='Description'
+            placeholder='Description'
+            error={data?.errors?.description || form.errors.description}
+            {...form.getInputProps('description')}
+          />
+          <DateTimePicker
+            label='Date and Time'
+            placeholder='Date and Time'
+            required
+            error={data?.errors?.dateTime || form.errors.dateTime}
+            {...form.getInputProps('dateTime')}
+          />
+          <NumberInput
+            label='Price'
+            placeholder='Price'
+            required
+            error={data?.errors?.price || form.errors.price}
+            {...form.getInputProps('price')}
+          />
+          <TextInput
+            label='Link'
+            placeholder='Link'
+            required
+            error={data?.errors?.link || form.errors.link}
+            {...form.getInputProps('link')}
+          />
+          <HashtagInput
+            hashtags={hashtags}
+            error={data?.errors?.hashtags || form.errors.hashtags}
+            selected={selected}
+            setSelected={setSelected}
+          />
+          <Button
+            type='submit'
+            onClick={() => {
+              modalClose();
+              const [existingHashtags, newHashtags] = _.partition(
+                selected,
+                (item: Hashtag) => item.id.substring(0, 4) !== 'new_'
+              );
+              form.setFieldValue('hashtags', existingHashtags);
+              form.setFieldValue('newHashtags', newHashtags);
+            }}>
+            Submit
+          </Button>
+        </Form>
+      </Modal>
+      <HeaderUser user={user} />
       <Box miw='70%' mih='78.5dvh'>
         <Stack>
+          {user &&
+            (user.onboardingComplete ? (
+              <Button onClick={() => modalOpen()}>Add Ticket</Button>
+            ) : (
+              <Button m='auto'>
+                <Link
+                  style={{ color: ' white', textDecoration: 'none' }}
+                  to='/api/stripe/authorize'>
+                  Complete Onboarding to Add Ticket
+                </Link>
+              </Button>
+            ))}
           <Form method='post'>
             <Group>
               <TextInput
@@ -97,10 +212,13 @@ export default function Feed() {
               tickets.map((ticket: Ticket) => (
                 <TicketCard
                   key={ticket.id}
+                  id={ticket.id}
                   title={ticket.title}
                   description={ticket.description}
                   dateTime={ticket.dateTime}
                   price={ticket.price}
+                  sellerUserId={ticket.sellerUserId}
+                  userId={user?.id}
                   hashtags={ticket.hashtags}
                 />
               ))
