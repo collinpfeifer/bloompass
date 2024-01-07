@@ -1,7 +1,7 @@
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 
-import { MantineProvider, Stack, createTheme } from '@mantine/core';
+import { MantineProvider, Stack, createTheme, Loader } from '@mantine/core';
 import { cssBundleHref } from '@remix-run/css-bundle';
 import type { LinksFunction } from '@remix-run/node';
 import {
@@ -11,6 +11,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigation,
 } from '@remix-run/react';
 
 export const links: LinksFunction = () => [
@@ -36,6 +37,7 @@ const theme = createTheme({
 });
 
 export default function App() {
+  // const navigation = useNavigation();
   return (
     <html lang='en'>
       <head>
@@ -56,6 +58,7 @@ export default function App() {
               height: '100%',
               backgroundAttachment: 'fixed',
             })}>
+            {/* {navigation.state !== 'idle' ? <Loader color='blue' /> : null} */}
             <Outlet />
             <ScrollRestoration />
             <Scripts />

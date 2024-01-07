@@ -183,7 +183,7 @@ export default function Feed() {
         <Stack>
           {user &&
             (user.onboardingComplete ? (
-              <Button onClick={() => modalOpen()}>Add Ticket</Button>
+              <Button m='auto' onClick={() => modalOpen()}>Add Ticket</Button>
             ) : (
               <Button m='auto'>
                 <Link

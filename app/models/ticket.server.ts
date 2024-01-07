@@ -91,73 +91,73 @@ export async function searchTicketsByQuery({ query }: { query: string }) {
   return json(tickets);
 }
 
-export async function searchTicketsByHashtags({
-  hashtags,
-}: {
-  hashtags: string[];
-}) {
-  const tickets = await prisma.ticket.findMany({
-    orderBy: {
-      dateTime: 'desc',
-    },
-    where: {
-      hashtags: {
-        some: {
-          title: {
-            in: hashtags,
-          },
-        },
-      },
-    },
-    include: { hashtags: true },
-  });
-  return json(tickets);
-}
+// export async function searchTicketsByHashtags({
+//   hashtags,
+// }: {
+//   hashtags: string[];
+// }) {
+//   const tickets = await prisma.ticket.findMany({
+//     orderBy: {
+//       dateTime: 'desc',
+//     },
+//     where: {
+//       hashtags: {
+//         some: {
+//           title: {
+//             in: hashtags,
+//           },
+//         },
+//       },
+//     },
+//     include: { hashtags: true },
+//   });
+//   return json(tickets);
+// }
 
-export async function searchTicketsByQueryAndHashtags({
-  query,
-  hashtags,
-}: {
-  query: string;
-  hashtags: string[];
-}) {
-  const tickets = await prisma.ticket.findMany({
-    orderBy: {
-      dateTime: 'desc',
-    },
-    where: {
-      AND: [
-        {
-          OR: [
-            {
-              title: {
-                contains: query,
-                mode: 'insensitive',
-              },
-            },
-            {
-              description: {
-                contains: query,
-                mode: 'insensitive',
-              },
-            },
-          ],
-        },
-        {
-          hashtags: {
-            some: {
-              title: {
-                in: hashtags,
-              },
-            },
-          },
-        },
-      ],
-    },
-    include: { hashtags: true },
-  });
-  return json(tickets);
-}
+// export async function searchTicketsByQueryAndHashtags({
+//   query,
+//   hashtags,
+// }: {
+//   query: string;
+//   hashtags: string[];
+// }) {
+//   const tickets = await prisma.ticket.findMany({
+//     orderBy: {
+//       dateTime: 'desc',
+//     },
+//     where: {
+//       AND: [
+//         {
+//           OR: [
+//             {
+//               title: {
+//                 contains: query,
+//                 mode: 'insensitive',
+//               },
+//             },
+//             {
+//               description: {
+//                 contains: query,
+//                 mode: 'insensitive',
+//               },
+//             },
+//           ],
+//         },
+//         {
+//           hashtags: {
+//             some: {
+//               title: {
+//                 in: hashtags,
+//               },
+//             },
+//           },
+//         },
+//       ],
+//     },
+//     include: { hashtags: true },
+//   });
+//   return json(tickets);
+// }
 
 export async function updateTicket({
   request,
@@ -190,4 +190,24 @@ export async function updateTicket({
     },
   });
   return json(ticket);
+}
+
+export async function getSellingTicketsByUserId({
+  userId,
+}: {
+  userId: string;
+}) {
+  const tickets = await prisma.ticket.findMany({
+    where: { sellerUserId: userId },
+    include: { hashtags: true },
+  });
+  return json(tickets);
+}
+
+export async function getBoughtTicketsByUserId({ userId }: { userId: string }) {
+  const tickets = await prisma.ticket.findMany({
+    where: { buyerUserId: userId },
+    include: { hashtags: true },
+  });
+  return json(tickets);
 }
