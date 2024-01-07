@@ -71,7 +71,7 @@ export default function HeaderUser({ user }: { user: User }) {
                     prefetch='render'
                     style={{ textDecoration: 'none', color: 'white' }}
                     to='/feed'>
-                    Home
+                    Feed
                   </Link>
                 </Menu.Item>
                 <Menu.Item
@@ -114,7 +114,7 @@ export default function HeaderUser({ user }: { user: User }) {
                   }>
                   Account settings
                 </Menu.Item>
-                <Form action='/logout'>
+                <Form method='post' action='/logout'>
                   <Menu.Item
                     leftSection={
                       <IconLogout
