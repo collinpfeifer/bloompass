@@ -216,8 +216,10 @@ export default function Feed() {
                   title={ticket.title}
                   description={ticket.description}
                   dateTime={ticket.dateTime}
+                  link={ticket.link}
                   price={ticket.price}
                   sellerUserId={ticket.sellerUserId}
+                  buyerUserId={ticket.buyerUserId}
                   userId={user?.id}
                   hashtags={ticket.hashtags}
                 />

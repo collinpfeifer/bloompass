@@ -92,16 +92,16 @@ export async function createCheckoutSession({
     'Seller does not have a Stripe account'
   );
 
-  console.log(
-    Math.round(
-      (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 0.03 * 100
-    )
-  );
 
   return await stripe.checkout.sessions.create({
     mode: 'payment',
     automatic_tax: {
       enabled: true,
+    },
+    metadata: {
+      ticketId,
+      buyerUserId,
+      sellerUserId: ticket.sellerUserId,
     },
     line_items: [
       {
@@ -165,42 +165,4 @@ export async function retrieveCheckoutSession(sessionId: string) {
 //   );
 
 //   return payout;
-// }
-// async function handleWebhook(request: Request) {
-//   if (
-//     process.env.ENDPOINT_SECRET &&
-//     typeof process.env.ENDPOINT_SECRET === 'string'
-//   ) {
-//     // Get the signature sent by Stripe
-//     const payload = await request.text();
-
-//     const signature = request.headers['stripe-signature'];
-//     if (!signature) throw new Error('Stripe signature is missing');
-//     try {
-//       const event = stripe.webhooks.constructEvent(
-//         payload,
-//         signature,
-//         process.env.ENDPOINT_SECRET
-//       );
-//       // Handle the event
-//       switch (event.type) {
-//         case 'checkout.session.completed':
-//           const paymentIntent = event.data
-//             .object as unknown as Stripe.PaymentIntent;
-//           // Then define and call a method to handle the successful payment intent.
-//           console.log('Payment intent', paymentIntent);
-
-//           break;
-//         default:
-//           // Unexpected event type
-//           console.log(`Unhandled event type ${event.type}.`);
-//       }
-
-//       // Return a 200 response to acknowledge receipt of the event
-//       return { received: true };
-//     } catch (err) {
-//       console.log(`⚠️  Webhook signature verification failed.`, err.message);
-//       return Error('Webhook signature verification failed.');
-//     }
-//   }
 // }

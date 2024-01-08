@@ -12,6 +12,8 @@ export default function TicketCard({
   description,
   price,
   sellerUserId,
+  buyerUserId,
+  link,
   userId,
   hashtags,
 }: {
@@ -22,6 +24,8 @@ export default function TicketCard({
   dateTime: string;
   sellerUserId: string;
   userId: string;
+  link: string;
+  buyerUserId: string | null;
   hashtags: Hashtag[] | null;
 }) {
   const { dayOfWeek, day, month, year, time } = convertDateString(dateTime);
@@ -36,6 +40,16 @@ export default function TicketCard({
         </div>
         <Badge variant='outline'>{`${dayOfWeek} ${month} ${day}, ${year} ${time} `}</Badge>
       </Group>
+
+      {buyerUserId === userId ||
+        (sellerUserId === userId && (
+          <Card.Section className={classes.section} mt='md'>
+            <Text fz='xs' c='dimmed' className={classes.label}>
+              Link
+            </Text>
+            {link}
+          </Card.Section>
+        ))}
 
       <Card.Section className={classes.section} mt='md'>
         <Text fz='sm' c='dimmed' className={classes.label}>
