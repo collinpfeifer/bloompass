@@ -1,7 +1,7 @@
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 
-import { MantineProvider, Stack, createTheme, Loader } from '@mantine/core';
+import { MantineProvider, Stack, createTheme } from '@mantine/core';
 import { cssBundleHref } from '@remix-run/css-bundle';
 import type { LinksFunction } from '@remix-run/node';
 import {
@@ -11,8 +11,8 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useNavigation,
 } from '@remix-run/react';
+import Footer from './components/footer';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
@@ -64,6 +64,7 @@ export default function App() {
             <Scripts />
             <LiveReload />
           </Stack>
+          <Footer />
         </MantineProvider>
       </body>
     </html>

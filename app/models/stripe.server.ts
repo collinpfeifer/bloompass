@@ -92,16 +92,10 @@ export async function createCheckoutSession({
     'Seller does not have a Stripe account'
   );
 
-
   return await stripe.checkout.sessions.create({
     mode: 'payment',
     automatic_tax: {
       enabled: true,
-    },
-    metadata: {
-      ticketId,
-      buyerUserId,
-      sellerUserId: ticket.sellerUserId,
     },
     line_items: [
       {
@@ -131,6 +125,11 @@ export async function createCheckoutSession({
       },
     ],
     payment_intent_data: {
+      metadata: {
+        ticketId,
+        buyerUserId,
+        sellerUserId: ticket.sellerUserId,
+      },
       transfer_data: {
         destination: sellerUser.stripeAccountId,
         amount: (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100,

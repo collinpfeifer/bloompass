@@ -24,14 +24,16 @@ export const action: ActionFunction = async ({
   if (event.type == 'payment_intent.succeeded') {
     const paymentIntent = event.data.object;
     const { ticketId, buyerUserId } = paymentIntent.metadata;
-    await updateTicket({
-      id: ticketId,
-      title: undefined,
-      description: undefined,
-      buyerUserId,
-      hashtags: undefined,
-      newHashtags: undefined,
-    });
+    const ticket = await (
+      await updateTicket({
+        id: ticketId,
+        title: undefined,
+        description: undefined,
+        buyerUserId,
+        hashtags: undefined,
+        newHashtags: undefined,
+      })
+    ).json();
     console.log('💰 payment success!');
   }
 

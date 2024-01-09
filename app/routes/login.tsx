@@ -149,7 +149,9 @@ export default function Login() {
                 type='button'
                 c='dimmed'
                 className='md:text-md text-xl lg:text-sm'>
-                <Link to='/signup'>Don&apos;t have an account? Sign up</Link>
+                <Link to={`/signup?redirectTo=${redirectTo}`}>
+                  Don&apos;t have an account? Sign up
+                </Link>
               </Anchor>
               <Button type='submit' radius='xl' style={{ background: 'green' }}>
                 <Text className='text-xl md:text-xl lg:text-lg'>Login</Text>

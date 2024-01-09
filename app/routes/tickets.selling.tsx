@@ -7,6 +7,7 @@ import { Ticket } from '@prisma/client';
 import { useLoaderData } from '@remix-run/react';
 import HeaderUser from '../components/headeruser';
 import TicketCard from '../components/ticketcard';
+import Footer from '../components/footer';
 
 export const loader: LoaderFunction = async ({
   request,
@@ -61,6 +62,7 @@ export default function TicketsSelling() {
           </Box>
         </Stack>
       </Box>
+      <Footer/>
     </>
   );
 }
