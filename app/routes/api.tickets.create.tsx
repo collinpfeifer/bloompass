@@ -84,6 +84,5 @@ export const action: ActionFunction = async ({
       newHashtags,
     })
   ).json();
-  console.log(newTicket);
   return json({});
 };

@@ -1,19 +1,22 @@
-import { LoaderFunction, LoaderFunctionArgs, json } from '@remix-run/node';
+import {
+  LoaderFunction,
+  LoaderFunctionArgs,
+  json,
+  redirect,
+} from '@remix-run/node';
 import { requireUser } from '../session.server';
 import { getSellingTicketsByUserId } from '../models/ticket.server';
-import invariant from 'tiny-invariant';
 import { Box, Stack } from '@mantine/core';
 import { Ticket } from '@prisma/client';
 import { useLoaderData } from '@remix-run/react';
 import HeaderUser from '../components/headeruser';
 import TicketCard from '../components/ticketcard';
-import Footer from '../components/footer';
 
 export const loader: LoaderFunction = async ({
   request,
 }: LoaderFunctionArgs) => {
   const user = await requireUser(request);
-  invariant(user?.id, 'User must be logged in to view this page');
+  if (!user?.id) return redirect('/login?redirect=/tickets/selling');
   const tickets = await (
     await getSellingTicketsByUserId({ userId: user?.id })
   ).json();
@@ -62,7 +65,6 @@ export default function TicketsSelling() {
           </Box>
         </Stack>
       </Box>
-      <Footer/>
     </>
   );
 }

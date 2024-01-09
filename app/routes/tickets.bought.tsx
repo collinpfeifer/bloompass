@@ -7,7 +7,6 @@ import { Box, Stack } from '@mantine/core';
 import { Ticket } from '@prisma/client';
 import { useLoaderData } from '@remix-run/react';
 import TicketCard from '../components/ticketcard';
-import Footer from '../components/footer';
 
 export const loader: LoaderFunction = async ({
   request,
@@ -62,7 +61,6 @@ export default function TicketsBought() {
           </Box>
         </Stack>
       </Box>
-      <Footer/>
     </>
   );
 }

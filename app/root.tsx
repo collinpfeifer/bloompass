@@ -55,7 +55,7 @@ export default function App() {
               background:
                 'linear-gradient(45deg, rgba(27,29,84,1) 0%, rgba(69,252,141,1) 100%)',
               minHeight: '100dvh',
-              height: '100%',
+
               backgroundAttachment: 'fixed',
             })}>
             {/* {navigation.state !== 'idle' ? <Loader color='blue' /> : null} */}

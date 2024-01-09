@@ -6,8 +6,10 @@ export default function Footer() {
         Copyright @ Collin Pfeifer
       </Text>
       <Text c='white' size='sm'>
-        Have problems or questions? Text (317) 995-5114 anytime and I will get
-        back to you ASAP
+        Have problems or questions?
+      </Text>
+      <Text c='white' size='sm'>
+        Text (317) 995-5114 anytime and I will get back to you ASAP
       </Text>
     </div>
   );

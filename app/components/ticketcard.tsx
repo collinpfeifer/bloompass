@@ -6,7 +6,9 @@ import {
   Button,
   Modal,
   Select,
-  TextInput,
+  Textarea,
+  Checkbox,
+  Stack,
 } from '@mantine/core';
 import classes from '../styles/ticket.module.css';
 import { Hashtag } from '@prisma/client';
@@ -43,26 +45,51 @@ export default function TicketCard({
   const form = useForm({
     initialValues: {
       reason: '',
+      refund: false,
       message: '',
     },
   });
   return (
     <>
       <Modal opened={opened} onClose={close} title='Report and/or Refund'>
-        <Form>
-          <Select
-            withAsterisk
-            required
-            {...form.getInputProps('reason')}
-            data={[
-              'Ticket did not scan/work at event',
-              'Not able to access Ticket',
-              'Not going to event anymore',
-              'Other',
-            ]}
-          />
-          <TextInput withAsterisk required {...form.getInputProps('message')} />
-          <Button type='submit'>Send report</Button>
+        <Form method='post' action='/api/reportorrefund'>
+          <Stack>
+            <Select
+              withAsterisk
+              required
+              name='reason'
+              label='Reason'
+              {...form.getInputProps('reason')}
+              placeholder='Reason for report/refund'
+              data={[
+                'Ticket did not scan/work at event',
+                'Not able to access Ticket',
+                'Not going to event anymore',
+                'Other',
+              ]}
+            />
+            <Checkbox
+              label='Refund?'
+              name='refund'
+              labelPosition='left'
+              {...form.getInputProps('refund', { type: 'checkbox' })}
+            />
+            <Textarea
+              withAsterisk
+              label='Report Message'
+              placeholder='Please provide a description of your issue and include your name, email, and/or phone number so that I can contact you'
+              name='message'
+              required
+              {...form.getInputProps('message')}
+            />
+            <input type='hidden' name='ticketId' value={id} />
+            <input type='hidden' name='userId' value={userId} />
+            <input type='hidden' name='sellerUserId' value={sellerUserId} />
+            <input type='hidden' name='buyerUserId' value={buyerUserId} />
+            <Button type='submit' onClick={close}>
+              Send report
+            </Button>
+          </Stack>
         </Form>
       </Modal>
       <Card withBorder radius='md' className={classes.card}>
