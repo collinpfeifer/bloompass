@@ -29,10 +29,11 @@ export async function createSession({
 }) {
   const session = await storage.getSession();
   session.set('userId', userId);
+  if (redirectTo === 'null') redirectTo = undefined;
   return redirect(redirectTo || '/feed', {
     headers: {
       'Set-Cookie': await storage.commitSession(session, {
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 60 * 60 * 24 * 30,
       }),
     },
   });

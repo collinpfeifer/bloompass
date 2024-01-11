@@ -9,6 +9,7 @@ import {
   Textarea,
   Checkbox,
   Stack,
+  NumberFormatter,
 } from '@mantine/core';
 import classes from '../styles/ticket.module.css';
 import { Hashtag } from '@prisma/client';
@@ -49,6 +50,47 @@ export default function TicketCard({
       message: '',
     },
   });
+
+  function buttons() {
+    if (!userId) {
+      return (
+        <Button>
+          <Link
+            style={{ textDecoration: 'none', color: 'white' }}
+            to={`/login?redirectTo=/tickets/${id}`}>
+            Login to Buy
+          </Link>
+        </Button>
+      );
+    } else if (userId && sellerUserId !== userId && !buyerUserId) {
+      return (
+        <Form method='post' action='/api/stripe/buy'>
+          <input type='hidden' name='ticketId' value={id} />
+          <input type='hidden' name='buyerUserId' value={userId} />
+          <Button
+            type='submit'
+            radius='xl'
+            style={{ flex: 1 }}
+            // disabled={!userId || buyerUserId}
+          >
+            Buy now
+          </Button>
+        </Form>
+      );
+    }
+    // else if (sellerUserId === userId && !buyerUserId) {
+    //   return (
+    //     <Button>
+    //       <Link style={{ textDecoration: 'none', color: 'white' }} to='/edit'>
+    //         Edit Ticket
+    //       </Link>
+    //     </Button>
+    //   );
+    // }
+    else if (buyerUserId === userId) {
+      return <Button onClick={open}>Report and/or Refund</Button>;
+    } else return null;
+  }
   return (
     <>
       <Modal opened={opened} onClose={close} title='Report and/or Refund'>
@@ -100,23 +142,28 @@ export default function TicketCard({
               {description}
             </Text>
           </div>
-          <Badge variant='outline'>{`${dayOfWeek} ${month} ${day}, ${year} ${time} `}</Badge>
+          <Stack>
+            <Badge variant='outline'>{`${dayOfWeek} ${month} ${day}, ${year} ${time} `}</Badge>
+            {buyerUserId && <Badge color='green'>Sold</Badge>}
+            {sellerUserId === userId && <Badge color='blue'>Selling</Badge>}
+            {buyerUserId === userId && <Badge color='red'>Bought</Badge>}
+          </Stack>
         </Group>
 
-        {buyerUserId === userId || sellerUserId === userId ? (
-          <Card.Section className={classes.section} mt='md'>
-            <Text fz='xs' c='dimmed' className={classes.label}>
-              Link
-            </Text>
-            {link}
-          </Card.Section>
-        ) : null}
+        {buyerUserId === userId ||
+          (sellerUserId === userId && (
+            <Card.Section className={classes.section} mt='md'>
+              <Text fz='xs' c='dimmed' className={classes.label}>
+                Link
+              </Text>
+              {link}
+            </Card.Section>
+          ))}
 
         <Card.Section className={classes.section} mt='md'>
           <Text fz='sm' c='dimmed' className={classes.label}>
             Hashtags
           </Text>
-
           <Group gap={8} mb={-8}>
             {hashtags?.map((hashtag) => (
               <Badge key={hashtag.id} variant='outline'>
@@ -128,44 +175,10 @@ export default function TicketCard({
 
         <Card.Section className={classes.section}>
           <Group gap={30}>
-            <div>
-              <Text fz='xl' fw={700} style={{ lineHeight: 1 }}>
-                {`$${price}`}
-              </Text>
-            </div>
-            {!userId ? (
-              <Button>
-                <Link
-                  style={{ textDecoration: 'none', color: 'white' }}
-                  to={`/login?redirectTo=/tickets/${id}`}>
-                  Login to Buy
-                </Link>
-              </Button>
-            ) : userId && sellerUserId !== userId && !buyerUserId ? (
-              <Form method='post' action='/api/stripe/buy'>
-                <input type='hidden' name='ticketId' value={id} />
-                <input type='hidden' name='buyerUserId' value={userId} />
-                <Button
-                  type='submit'
-                  radius='xl'
-                  style={{ flex: 1 }}
-                  disabled={!userId || buyerUserId}>
-                  Buy now
-                </Button>
-              </Form>
-            ) : sellerUserId === userId ? (
-              <Button>
-                <Link
-                  style={{ textDecoration: 'none', color: 'white' }}
-                  to='/edit'>
-                  Edit Ticket
-                </Link>
-              </Button>
-            ) : (
-              buyerUserId === userId && (
-                <Button onClick={open}>Report and/or Refund</Button>
-              )
-            )}
+            <Text fz='xl' fw={700} style={{ lineHeight: 1 }}>
+              <NumberFormatter prefix='$ ' value={price} thousandSeparator />
+            </Text>
+            {buttons()}
           </Group>
         </Card.Section>
       </Card>

@@ -1,12 +1,9 @@
 import { Overlay, Container, Title, Button } from '@mantine/core';
-import { useToggle } from '@mantine/hooks';
 import { Link } from '@remix-run/react';
 import HeaderSimple from '../components/headersimple';
 import classes from '../styles/index.module.css';
 
 export default function Index() {
-  const [ctaButtonClicked, toggle] = useToggle([false, true]);
-
   return (
     <div className={classes.hero}>
       <HeaderSimple />
@@ -17,14 +14,13 @@ export default function Index() {
       />
       <Container className={classes.container}>
         <Title order={1} className={classes.title}>
-          Grow your events with organic marketing
+          Resell your tickets to other true fans.
         </Title>
         <Title order={2} className={classes.description} mt='xl'>
-          We use social media to grow your events exponetially.
+          Bloompass is what ticketing should be. We&apos;re a ticketing platform, with a $1 fee, thats it. Refunds for tickets that don&apos;t work, keeping you safe from scams, and no hidden fees.
         </Title>
         <Title order={2} className={classes.description} mt='xl'>
-          With our affiliate marketing, users promote your events and earn a
-          commission on each ticket sold, at no cost to you.
+          We&apos;re currently in beta. Sign up to get early access.
         </Title>
         <Button
           variant='outline'
@@ -32,11 +28,12 @@ export default function Index() {
           size='xl'
           radius='xl'
           color='violet'
-          className={classes.control}
-          loading={ctaButtonClicked}
-          onClick={() => toggle()}>
-          <Link prefetch='intent' to='/signup'>
-            Free to use. Forever.
+          className={classes.control}>
+          <Link
+            prefetch='intent'
+            to='/signup'
+            style={{ textDecoration: 'none', color: 'white' }}>
+            Sign up for early access
           </Link>
         </Button>
       </Container>

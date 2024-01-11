@@ -113,23 +113,35 @@ export async function createCheckoutSession({
         price_data: {
           currency: 'usd',
           product_data: {
+            name: 'Stripe Fee',
+          },
+          unit_amount:
+            30 +
+            Math.round(
+              (Math.round((ticket.price + Number.EPSILON) * 100) / 100) *
+                0.034 *
+                100
+            ),
+        },
+        quantity: 1,
+      },
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
             name: 'Bloompass Fee',
           },
-          unit_amount: Math.round(
-            (Math.round((ticket.price + Number.EPSILON) * 100) / 100) *
-              0.03 *
-              100
-          ),
+          unit_amount: 100,
         },
         quantity: 1,
       },
     ],
+    metadata: {
+      ticketId,
+      buyerUserId,
+      sellerUserId: ticket.sellerUserId,
+    },
     payment_intent_data: {
-      metadata: {
-        ticketId,
-        buyerUserId,
-        sellerUserId: ticket.sellerUserId,
-      },
       transfer_data: {
         destination: sellerUser.stripeAccountId,
         amount: (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100,

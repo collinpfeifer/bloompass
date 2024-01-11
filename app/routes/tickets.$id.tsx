@@ -10,7 +10,7 @@ import { useLoaderData } from '@remix-run/react';
 import { getUser } from '../session.server';
 import { Flex, CopyButton, Tooltip, ActionIcon, Text } from '@mantine/core';
 import { IconCheck, IconCopy } from '@tabler/icons-react';
-import Footer from '../components/footer';
+import HeaderUser from '../components/headeruser';
 
 export const loader: LoaderFunction = async ({
   request,
@@ -27,6 +27,7 @@ export default function Ticket() {
   const { user, ticket, baseUrl } = useLoaderData<typeof loader>();
   return (
     <>
+      <HeaderUser user={user} />
       <TicketCard
         key={ticket.id}
         id={ticket.id}

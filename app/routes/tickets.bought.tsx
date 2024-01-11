@@ -50,7 +50,9 @@ export default function TicketsBought() {
                   description={ticket.description}
                   dateTime={ticket.dateTime}
                   price={ticket.price}
+                  link={ticket.link}
                   sellerUserId={ticket.sellerUserId}
+                  buyerUserId={ticket.buyerUserId}
                   userId={user?.id}
                   hashtags={ticket.hashtags}
                 />

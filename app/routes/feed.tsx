@@ -200,13 +200,16 @@ export default function Feed() {
               <TextInput
                 name='query'
                 placeholder='Search for tickets and hashtags'
+                m='auto'
                 w='80%'
                 {...form.getInputProps('query')}
               />
-              <Button disabled={form.values.query.length < 2} type='submit'>
-                Search
-              </Button>
-              <Button>Clear</Button>
+              <Group m='auto'>
+                <Button disabled={form.values.query.length < 2} type='submit'>
+                  Search
+                </Button>
+                <Button>Clear</Button>
+              </Group>
             </Group>
           </Form>
           <Box m='auto'>

@@ -16,7 +16,7 @@
     "@mantine/form": "^7.3.2",
     "@mantine/hooks": "^7.3.2",
     "@mantine/modals": "^7.3.2",
-    "@prisma/client": "^5.7.1",
+    "@prisma/client": "^5.8.0",
     "@remix-run/css-bundle": "^2.4.1",
     "@remix-run/node": "^2.4.1",
     "@remix-run/react": "^2.4.1",
@@ -50,7 +50,7 @@
     "postcss": "^8.4.32",
     "postcss-preset-mantine": "^1.12.2",
     "postcss-simple-vars": "^7.0.1",
-    "prisma": "^5.7.1",
+    "prisma": "^5.8.0",
     "typescript": "^5.1.6"
   },
   "engines": {

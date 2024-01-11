@@ -50,6 +50,9 @@ export async function getTicket({ id }: { id: string }) {
 
 export async function getTickets() {
   const tickets = await prisma.ticket.findMany({
+    where: {
+      buyerUserId: null,
+    },
     include: { hashtags: true },
   });
   return json(tickets);
@@ -61,6 +64,7 @@ export async function searchTicketsByQuery({ query }: { query: string }) {
       dateTime: 'desc',
     },
     where: {
+      buyerUserId: null,
       OR: [
         {
           title: {
@@ -162,12 +166,16 @@ export async function searchTicketsByQuery({ query }: { query: string }) {
 export async function updateTicket({
   id,
   title,
+  sold,
+  soldAt,
   description,
   hashtags,
   buyerUserId,
   newHashtags,
 }: {
   id: string;
+  sold: boolean | undefined;
+  soldAt: string | undefined;
   title: string | undefined;
   description: string | undefined;
   buyerUserId: string | undefined;
@@ -179,6 +187,8 @@ export async function updateTicket({
       where: { id },
       data: {
         title,
+        sold,
+        soldAt,
         description,
         buyerUserId,
         hashtags: {
@@ -193,6 +203,8 @@ export async function updateTicket({
       where: { id },
       data: {
         title,
+        sold,
+        soldAt,
         description,
         buyerUserId,
         hashtags: {
@@ -206,6 +218,8 @@ export async function updateTicket({
       where: { id },
       data: {
         title,
+        sold,
+        soldAt,
         description,
         buyerUserId,
         hashtags: {
@@ -219,6 +233,8 @@ export async function updateTicket({
       where: { id },
       data: {
         title,
+        sold,
+        soldAt,
         description,
         buyerUserId,
       },

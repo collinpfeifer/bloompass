@@ -26,7 +26,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const params = new URLSearchParams(request.url.split('?')[1]);
   const redirectTo = params.get('redirectTo');
   const user = await getUser(request);
-  if (user) return redirect(`/feed?redirectTo=${redirectTo}`);
+  if (user)
+    return redirect(`/feed${redirectTo ? `?redirectTo=${redirectTo}` : ''}`);
   else return json({});
 };
 

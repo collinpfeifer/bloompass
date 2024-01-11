@@ -25,6 +25,7 @@ export const loader: LoaderFunction = async ({
 
 export default function TicketsSelling() {
   const { user, tickets } = useLoaderData<typeof loader>();
+  console.log(tickets);
   return (
     <>
       <HeaderUser user={user} />
@@ -54,7 +55,9 @@ export default function TicketsSelling() {
                   description={ticket.description}
                   dateTime={ticket.dateTime}
                   price={ticket.price}
+                  link={ticket.link}
                   sellerUserId={ticket.sellerUserId}
+                  buyerUserId={ticket.buyerUserId}
                   userId={user?.id}
                   hashtags={ticket.hashtags}
                 />

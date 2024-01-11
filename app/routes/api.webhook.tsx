@@ -1,7 +1,7 @@
-import { ActionFunction, ActionFunctionArgs } from '@remix-run/node';
+import { ActionFunction, ActionFunctionArgs, redirect } from '@remix-run/node';
 import stripe from '../utils/stripe.server';
 import invariant from 'tiny-invariant';
-import { updateTicket } from '../models/ticket.server';
+import { getTicket, updateTicket } from '../models/ticket.server';
 
 export const action: ActionFunction = async ({
   request,
@@ -20,21 +20,34 @@ export const action: ActionFunction = async ({
       status: 400,
     });
   }
-
-  if (event.type == 'payment_intent.succeeded') {
-    const paymentIntent = event.data.object;
-    const { ticketId, buyerUserId } = paymentIntent.metadata;
-    const ticket = await (
-      await updateTicket({
-        id: ticketId,
-        title: undefined,
-        description: undefined,
-        buyerUserId,
-        hashtags: undefined,
-        newHashtags: undefined,
-      })
-    ).json();
-    console.log('💰 payment success!');
+  if (event.type === 'checkout.session.completed') {
+    const checkoutSession = event.data.object;
+    if (checkoutSession.metadata) {
+      const { ticketId, buyerUserId } = checkoutSession.metadata;
+      const ticket = await (await getTicket({ id: ticketId })).json();
+      if (ticket) {
+        if (ticket.sold) {
+          console.log(checkoutSession.status)
+          await stripe.checkout.sessions.expire(checkoutSession.id);
+          console.log('💰 payment failed!');
+          return redirect(`/tickets/alreadysold/${ticketId}`);
+        } else {
+          await (
+            await updateTicket({
+              id: ticketId,
+              title: undefined,
+              description: undefined,
+              buyerUserId,
+              sold: true,
+              soldAt: new Date().toISOString(),
+              hashtags: undefined,
+              newHashtags: undefined,
+            })
+          ).json();
+          console.log('💰 payment success!');
+        }
+      }
+    }
   }
 
   return {};

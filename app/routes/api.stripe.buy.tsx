@@ -9,7 +9,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     ticketId: z.string(),
     buyerUserId: z.string(),
   });
-  console.log(formData);
   const result = buySchema.safeParse(formData);
   if (!result.success) return json({ errors: result.error.issues[0].message });
   const { ticketId, buyerUserId } = result.data;
@@ -19,7 +18,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     successUrl: `${process.env.BASE_URL}/api/stripe/checkoutsuccess?session_id={CHECKOUT_SESSION_ID}`,
     cancelUrl: `${process.env.BASE_URL}/feed`,
   });
-  console.log(session)
   invariant(session.url, 'Session URL not created');
   return redirect(session.url);
 };

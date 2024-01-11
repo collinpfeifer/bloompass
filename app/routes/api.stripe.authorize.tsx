@@ -32,7 +32,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       account: accountId,
       refreshUrl: `${process.env.BASE_URL}/api/stripe/authorize`,
       returnUrl: `${process.env.BASE_URL}/api/stripe/onboarded${
-        redirectTo && `?redirectTo=${redirectTo}`
+        redirectTo ? `?redirectTo=${redirectTo}` : ''
       }`,
     });
 

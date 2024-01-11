@@ -11,7 +11,7 @@ import {
   useMantineTheme,
   Button,
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import {
   IconLogout,
   IconSettings,
@@ -28,12 +28,12 @@ export default function HeaderUser({ user }: { user: User }) {
   const theme = useMantineTheme();
   const [opened, { toggle }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   return (
     <div className={classes.header}>
       <Container className={classes.mainSection} size='md'>
         <Group justify='space-between'>
-          <Burger opened={opened} onClick={toggle} hiddenFrom='xs' size='sm' />
           {user ? (
             <Menu
               width={260}
@@ -43,20 +43,29 @@ export default function HeaderUser({ user }: { user: User }) {
               onOpen={() => setUserMenuOpened(true)}
               withinPortal>
               <Menu.Target>
-                <UnstyledButton
-                  className={cx(classes.user, {
-                    [classes.userActive]: userMenuOpened,
-                  })}>
-                  <Group gap={7}>
-                    <Text fw={500} size='sm' lh={1} mr={3}>
-                      {user.email}
-                    </Text>
-                    <IconChevronDown
-                      style={{ width: rem(12), height: rem(12) }}
-                      stroke={1.5}
-                    />
-                  </Group>
-                </UnstyledButton>
+                {isMobile ? (
+                  <Burger
+                    opened={opened}
+                    onClick={toggle}
+                    hiddenFrom='xs'
+                    size='sm'
+                  />
+                ) : (
+                  <UnstyledButton
+                    className={cx(classes.user, {
+                      [classes.userActive]: userMenuOpened,
+                    })}>
+                    <Group gap={7}>
+                      <Text fw={500} size='sm' lh={1} mr={3}>
+                        {user.email}
+                      </Text>
+                      <IconChevronDown
+                        style={{ width: rem(12), height: rem(12) }}
+                        stroke={1.5}
+                      />
+                    </Group>
+                  </UnstyledButton>
+                )}
               </Menu.Target>
               <Menu.Dropdown>
                 <Menu.Item

@@ -33,6 +33,8 @@ model Ticket {
   sellerUser        User      @relation("SellingTickets", fields: [sellerUserId], references: [id])
   buyerUserId       String?
   buyerUser         User?     @relation("BoughtTickets", fields: [buyerUserId], references: [id])
+  soldAt            DateTime?
+  sold              Boolean   @default(false)
   hashtags    Hashtag[]
 }
 model Hashtag {
