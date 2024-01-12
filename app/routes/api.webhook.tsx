@@ -1,7 +1,8 @@
-import { ActionFunction, ActionFunctionArgs, redirect } from '@remix-run/node';
+import { ActionFunction, ActionFunctionArgs } from '@remix-run/node';
 import stripe from '../utils/stripe.server';
 import invariant from 'tiny-invariant';
 import { getTicket, updateTicket } from '../models/ticket.server';
+import { getUserById } from '../models/user.server';
 
 export const action: ActionFunction = async ({
   request,
@@ -23,15 +24,27 @@ export const action: ActionFunction = async ({
   if (event.type === 'checkout.session.completed') {
     const checkoutSession = event.data.object;
     if (checkoutSession.metadata) {
-      const { ticketId, buyerUserId } = checkoutSession.metadata;
+      const { ticketId, buyerUserId, sellerUserId } = checkoutSession.metadata;
       const ticket = await (await getTicket({ id: ticketId })).json();
       if (ticket) {
         if (ticket.sold) {
-          console.log(checkoutSession.status)
-          await stripe.checkout.sessions.expire(checkoutSession.id);
-          console.log('💰 payment failed!');
-          return redirect(`/tickets/alreadysold/${ticketId}`);
+          await stripe.refunds.create({
+            payment_intent: checkoutSession.payment_intent,
+          });
+          console.log('💰 refund success!');
         } else {
+          const sellerUser = await (
+            await getUserById({ id: sellerUserId })
+          ).json();
+          invariant(sellerUser, 'No seller user');
+          invariant(sellerUser.stripeAccountId, 'No seller stripe account id');
+          await stripe.transfers.create({
+            amount: Math.round(
+              (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100
+            ),
+            currency: 'usd',
+            destination: sellerUser.stripeAccountId,
+          });
           await (
             await updateTicket({
               id: ticketId,

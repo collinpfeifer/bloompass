@@ -104,8 +104,9 @@ export async function createCheckoutSession({
           product_data: {
             name: ticket.title,
           },
-          unit_amount:
-            (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100,
+          unit_amount: Math.round(
+            (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100
+          ),
         },
         quantity: 1,
       },
@@ -141,12 +142,14 @@ export async function createCheckoutSession({
       buyerUserId,
       sellerUserId: ticket.sellerUserId,
     },
-    payment_intent_data: {
-      transfer_data: {
-        destination: sellerUser.stripeAccountId,
-        amount: (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100,
-      },
-    },
+    // payment_intent_data: {
+    //   transfer_data: {
+    //     destination: sellerUser.stripeAccountId,
+    //     amount: Math.round(
+    //       (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100
+    //     ),
+    //   },
+    // },
     success_url: successUrl,
     cancel_url: cancelUrl,
   });

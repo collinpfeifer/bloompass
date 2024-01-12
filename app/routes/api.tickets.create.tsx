@@ -15,6 +15,7 @@ export const action: ActionFunction = async ({
   if (!user.onboardingComplete) return redirect('/api/stripe/authorize');
   const formData = Object.fromEntries(await request.formData());
 
+
   const stringToJSONSchema = z.string().transform((str, ctx) => {
     try {
       return JSON.parse(str);
@@ -56,6 +57,7 @@ export const action: ActionFunction = async ({
   });
 
   const result = createTicketSchema.safeParse(formData);
+  console.log(result);
   if (!result.success)
     return json({
       errors: {

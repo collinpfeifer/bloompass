@@ -78,7 +78,7 @@ export default function HeaderUser({ user }: { user: User }) {
                   }>
                   <Link
                     prefetch='render'
-                    style={{ textDecoration: 'none', color: 'white' }}
+                    style={{ textDecoration: 'none', color: 'black' }}
                     to='/feed'>
                     Feed
                   </Link>
@@ -93,7 +93,7 @@ export default function HeaderUser({ user }: { user: User }) {
                   }>
                   <Link
                     prefetch='render'
-                    style={{ textDecoration: 'none', color: 'white' }}
+                    style={{ textDecoration: 'none', color: 'black' }}
                     to='/tickets/selling'>
                     Selling Tickets
                   </Link>
@@ -108,7 +108,7 @@ export default function HeaderUser({ user }: { user: User }) {
                   }>
                   <Link
                     prefetch='render'
-                    style={{ textDecoration: 'none', color: 'white' }}
+                    style={{ textDecoration: 'none', color: 'black' }}
                     to='/tickets/bought'>
                     Bought Tickets
                   </Link>

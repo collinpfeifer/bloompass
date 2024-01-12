@@ -77,7 +77,7 @@ export default function SignUp() {
   const redirectTo = searchParams.get('redirectTo');
   const data = useActionData<typeof action>();
   const isDesktop = useMediaQuery('(min-width: 64em)');
-
+  console.log(data);
   const form = useForm({
     validateInputOnChange: true,
     initialValues: {
@@ -135,26 +135,26 @@ export default function SignUp() {
               type='email'
               size={isDesktop ? 'md' : 'xl'}
               withAsterisk
-              error={data?.errors?.email || form.errors.email}
-              placeholder='Your name'
+              placeholder='Your email'
               radius='md'
               {...form.getInputProps('email')}
+              error={data?.errors?.email || form.errors.email}
             />
             {redirectTo && (
               <input type='hidden' name='redirectTo' value={redirectTo} />
             )}
 
             <PasswordStrength
-              error={data?.errors?.password || form.errors.password}
               {...form.getInputProps('password')}
+              error={data?.errors?.password || form.errors.password}
             />
 
             <Checkbox
               label='I accept terms and conditions'
               size={isDesktop ? 'md' : 'xl'}
               name='terms'
-              error={form.errors.terms}
               {...form.getInputProps('terms', { type: 'checkbox' })}
+              error={form.errors.terms}
             />
           </Stack>
 
@@ -164,9 +164,16 @@ export default function SignUp() {
               type='button'
               c='dimmed'
               className='md:text-md text-xl lg:text-sm'>
-              <Link to='/login'>Already have a user account? Login</Link>
+              <Link
+                to={`/login${redirectTo ? `redirectTo=${redirectTo}` : ''}`}>
+                Already have a user account? Login
+              </Link>
             </Anchor>
-            <Button type='submit' radius='xl' style={{ background: 'green' }}>
+            <Button
+              type='submit'
+              radius='xl'
+              style={{ background: 'green' }}
+              disabled={!form.values.terms}>
               <Text className='text-xl md:text-xl lg:text-lg'>Sign Up</Text>
             </Button>
           </Group>

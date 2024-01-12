@@ -8,6 +8,7 @@ import { getTicket } from '../models/ticket.server';
 import { Link, useLoaderData } from '@remix-run/react';
 import { Title, Group, Button, Container, Text } from '@mantine/core';
 import classes from '../styles/notfound.module.css';
+import { formatTimeDifference } from '../utils/formatTimeDifference';
 
 export const loader: LoaderFunction = async ({
   params,
@@ -15,6 +16,8 @@ export const loader: LoaderFunction = async ({
   const ticketId = params.ticketId;
   if (!ticketId) return redirect('/feed');
   const ticket = await (await getTicket({ id: ticketId })).json();
+  if (!ticket) return redirect('/feed');
+  if (!ticket.sold) return redirect(`/tickets/${ticketId}`);
   return json({ ticket });
 };
 
@@ -22,13 +25,16 @@ export default function AlreadySold() {
   const { ticket } = useLoaderData<typeof loader>();
   return (
     <Container className={classes.root}>
-      <div className={classes.label}>Aw you just missed it!</div>
+      <div className={classes.label}>Aw you just missed it! 😔</div>
       <Title className={classes.title}>
-        Someone bought this ticket before you did
+        Someone bought this ticket before you did. Don&apos;t worry, we refunded it to your account.
       </Title>
       <Text size='lg' ta='center' className={classes.description}>
-        More specifically, this ticket was bought
-        {Date.now() - Date.parse(ticket.soldAt)} ago. Better luck next time!
+        More specifically, this ticket was bought{' '}
+        <span style={{ fontWeight: 'bold' }}>
+          {formatTimeDifference(Date.parse(ticket.soldAt), Date.now())}
+        </span>{' '}
+        ago. Better luck next time!
       </Text>
       <Group justify='center'>
         <Button variant='subtle' size='md'>

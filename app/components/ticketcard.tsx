@@ -26,6 +26,7 @@ export default function TicketCard({
   price,
   sellerUserId,
   buyerUserId,
+  sold,
   link,
   userId,
   hashtags,
@@ -38,6 +39,7 @@ export default function TicketCard({
   sellerUserId: string;
   userId: string | null | undefined;
   link: string;
+  sold: boolean;
   buyerUserId: string | null | undefined;
   hashtags: Hashtag[] | null | undefined;
 }) {
@@ -71,8 +73,7 @@ export default function TicketCard({
             type='submit'
             radius='xl'
             style={{ flex: 1 }}
-            // disabled={!userId || buyerUserId}
-          >
+            disabled={sold || !userId}>
             Buy now
           </Button>
         </Form>
@@ -144,34 +145,39 @@ export default function TicketCard({
           </div>
           <Stack>
             <Badge variant='outline'>{`${dayOfWeek} ${month} ${day}, ${year} ${time} `}</Badge>
-            {buyerUserId && <Badge color='green'>Sold</Badge>}
+            {sold && sellerUserId === userId && (
+              <Badge color='green'>Sold</Badge>
+            )}
             {sellerUserId === userId && <Badge color='blue'>Selling</Badge>}
-            {buyerUserId === userId && <Badge color='red'>Bought</Badge>}
+            {sold && buyerUserId === userId && (
+              <Badge color='red'>Bought</Badge>
+            )}
           </Stack>
         </Group>
 
-        {buyerUserId === userId ||
-          (sellerUserId === userId && (
-            <Card.Section className={classes.section} mt='md'>
-              <Text fz='xs' c='dimmed' className={classes.label}>
-                Link
-              </Text>
-              {link}
-            </Card.Section>
-          ))}
+        {(buyerUserId === userId || sellerUserId === userId) && (
+          <Card.Section className={classes.section} mt='md'>
+            <Text fz='xs' c='dimmed' className={classes.label}>
+              Link
+            </Text>
+            <a href={link}>{link}</a>
+          </Card.Section>
+        )}
 
-        <Card.Section className={classes.section} mt='md'>
-          <Text fz='sm' c='dimmed' className={classes.label}>
-            Hashtags
-          </Text>
-          <Group gap={8} mb={-8}>
-            {hashtags?.map((hashtag) => (
-              <Badge key={hashtag.id} variant='outline'>
-                {hashtag.title}
-              </Badge>
-            ))}
-          </Group>
-        </Card.Section>
+        {hashtags?.length > 0 && (
+          <Card.Section className={classes.section} mt='md'>
+            <Text fz='sm' c='dimmed' className={classes.label}>
+              Hashtags
+            </Text>
+            <Group gap={8} mb={-8}>
+              {hashtags?.map((hashtag) => (
+                <Badge key={hashtag.id} variant='outline'>
+                  {hashtag.title}
+                </Badge>
+              ))}
+            </Group>
+          </Card.Section>
+        )}
 
         <Card.Section className={classes.section}>
           <Group gap={30}>

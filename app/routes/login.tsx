@@ -123,10 +123,10 @@ export default function Login() {
                 size={isDesktop ? 'md' : 'xl'}
                 withAsterisk
                 required
-                error={data?.errors?.email || form.errors.email}
                 placeholder='Your email'
                 radius='md'
                 {...form.getInputProps('email')}
+                error={data?.errors?.email || form.errors.email}
               />
               {redirectTo && (
                 <input type='hidden' name='redirectTo' value={redirectTo} />
@@ -138,10 +138,10 @@ export default function Login() {
                 required
                 size={isDesktop ? 'md' : 'xl'}
                 withAsterisk
-                error={data?.errors?.password || form.errors.password}
                 placeholder='Your password'
                 radius='md'
                 {...form.getInputProps('password')}
+                error={data?.errors?.password || form.errors.password}
               />
             </Stack>
             <Group justify='apart' mt='xl'>
@@ -150,7 +150,10 @@ export default function Login() {
                 type='button'
                 c='dimmed'
                 className='md:text-md text-xl lg:text-sm'>
-                <Link to={`/signup?redirectTo=${redirectTo}`}>
+                <Link
+                  to={`/signup${
+                    redirectTo ? `redirectTo=${redirectTo}` : ''
+                  }`}>
                   Don&apos;t have an account? Sign up
                 </Link>
               </Anchor>

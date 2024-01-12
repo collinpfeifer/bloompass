@@ -117,7 +117,6 @@ export default function Feed() {
             formData.append('link', values.link);
             formData.append('hashtags', JSON.stringify(values.hashtags));
             formData.append('newHashtags', JSON.stringify(values.newHashtags));
-
             await fetch('/api/tickets/create', {
               method: 'POST',
               body: formData,
@@ -126,40 +125,45 @@ export default function Feed() {
           <TextInput
             label='Title'
             placeholder='Title'
+            name='title'
             required
-            error={data?.errors?.title || form.errors.title}
-            {...form.getInputProps('title')}
+            {...modalForm.getInputProps('title')}
+            error={data?.errors?.title || modalForm.errors.title}
           />
           <TextInput
             label='Description'
             placeholder='Description'
-            error={data?.errors?.description || form.errors.description}
-            {...form.getInputProps('description')}
+            name='description'
+            {...modalForm.getInputProps('description')}
+            error={data?.errors?.description || modalForm.errors.description}
           />
           <DateTimePicker
             label='Date and Time'
             placeholder='Date and Time'
             required
-            error={data?.errors?.dateTime || form.errors.dateTime}
-            {...form.getInputProps('dateTime')}
+            name='dateTime'
+            {...modalForm.getInputProps('dateTime')}
+            error={data?.errors?.dateTime || modalForm.errors.dateTime}
           />
           <NumberInput
             label='Price'
             placeholder='Price'
+            name='price'
             required
-            error={data?.errors?.price || form.errors.price}
-            {...form.getInputProps('price')}
+            {...modalForm.getInputProps('price')}
+            error={data?.errors?.price || modalForm.errors.price}
           />
           <TextInput
             label='Link'
             placeholder='Link'
+            name='link'
             required
-            error={data?.errors?.link || form.errors.link}
-            {...form.getInputProps('link')}
+            {...modalForm.getInputProps('link')}
+            error={data?.errors?.link || modalForm.errors.link}
           />
           <HashtagInput
             hashtags={hashtags}
-            error={data?.errors?.hashtags || form.errors.hashtags}
+            error={data?.errors?.hashtags || modalForm.errors.hashtags}
             selected={selected}
             setSelected={setSelected}
           />
@@ -167,12 +171,13 @@ export default function Feed() {
             type='submit'
             onClick={() => {
               modalClose();
+              console.log(selected)
               const [existingHashtags, newHashtags] = _.partition(
                 selected,
                 (item: Hashtag) => item.id.substring(0, 4) !== 'new_'
               );
-              form.setFieldValue('hashtags', existingHashtags);
-              form.setFieldValue('newHashtags', newHashtags);
+              modalForm.setFieldValue('hashtags', existingHashtags);
+              modalForm.setFieldValue('newHashtags', newHashtags);
             }}>
             Submit
           </Button>
@@ -222,6 +227,7 @@ export default function Feed() {
                   description={ticket.description}
                   dateTime={ticket.dateTime}
                   link={ticket.link}
+                  sold={ticket.sold}
                   price={ticket.price}
                   sellerUserId={ticket.sellerUserId}
                   buyerUserId={ticket.buyerUserId}
