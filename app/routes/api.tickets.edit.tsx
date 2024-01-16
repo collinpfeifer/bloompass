@@ -66,8 +66,6 @@ export const action: ActionFunction = async ({
     });
   }
 
-  console.log('data', result.data);
-
   const { id, title, description, dateTime, price, hashtags, newHashtags } =
     result.data;
 
@@ -82,5 +80,6 @@ export const action: ActionFunction = async ({
       newHashtags,
     })
   ).json();
-  return json({ ticket: newTicket, errors: {} });
+  // return redirect(`/tickets/${newTicket.id}`);
+  return json({ ticket: newTicket, errors: null });
 };

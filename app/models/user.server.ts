@@ -61,7 +61,10 @@ export async function login({
   if (!passwordValid) {
     return json({ user: null, error: `Invalid password` }, { status: 400 });
   }
-  return json({ user: { id: user.id, email: user.email }, error: null });
+  return json({
+    user: { id: user.id, email: user.email, banned: user.banned },
+    error: null,
+  });
 }
 
 export async function getUserById({ id }: { id: string }) {

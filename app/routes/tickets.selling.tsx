@@ -6,26 +6,27 @@ import {
 } from '@remix-run/node';
 import { requireUser } from '../session.server';
 import { getSellingTicketsByUserId } from '../models/ticket.server';
-import { Box, Stack } from '@mantine/core';
+import { Box, Stack, Title, Text, Flex } from '@mantine/core';
 import { Ticket } from '@prisma/client';
 import { useLoaderData } from '@remix-run/react';
 import HeaderUser from '../components/headeruser';
 import TicketCard from '../components/ticketcard';
+import { getHashtags } from '../models/hashtag.server';
 
 export const loader: LoaderFunction = async ({
   request,
 }: LoaderFunctionArgs) => {
   const user = await requireUser(request);
-  if (!user?.id) return redirect('/login?redirect=/tickets/selling');
+  if (!user?.id) return redirect('/login?redirectTo=/tickets/selling');
   const tickets = await (
     await getSellingTicketsByUserId({ userId: user?.id })
   ).json();
-  return json({ user, tickets });
+  const allHashtags = await (await getHashtags()).json();
+  return json({ user, tickets, hashtags: allHashtags });
 };
 
 export default function TicketsSelling() {
-  const { user, tickets } = useLoaderData<typeof loader>();
-  console.log(tickets);
+  const { user, tickets, hashtags } = useLoaderData<typeof loader>();
   return (
     <>
       <HeaderUser user={user} />
@@ -46,6 +47,7 @@ export default function TicketsSelling() {
             </Group>
           </Form> */}
           <Box m='auto'>
+            <Title c='white'>Your Sold/Selling Tickets</Title>
             {tickets.length > 0 ? (
               tickets.map((ticket: Ticket) => (
                 <TicketCard
@@ -61,10 +63,15 @@ export default function TicketsSelling() {
                   buyerUserId={ticket.buyerUserId}
                   userId={user?.id}
                   hashtags={ticket.hashtags}
+                  allHashtags={hashtags}
                 />
               ))
             ) : (
-              <p>No tickets found</p>
+              <Flex justify='center'>
+                <Text c='white' fw='bold' m='auto'>
+                  No tickets selling/sold
+                </Text>
+              </Flex>
             )}
           </Box>
         </Stack>

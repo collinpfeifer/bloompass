@@ -56,6 +56,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
     if (!user)
       return json({ errors: { email: 'User not found', password: null } });
+    if (user.banned)
+      return json({
+        errors: { email: 'You are banned', password: 'You are banned' },
+      });
     return createSession({ userId: user.id, redirectTo });
   } catch (error) {
     console.log(error);
@@ -151,9 +155,7 @@ export default function Login() {
                 c='dimmed'
                 className='md:text-md text-xl lg:text-sm'>
                 <Link
-                  to={`/signup${
-                    redirectTo ? `redirectTo=${redirectTo}` : ''
-                  }`}>
+                  to={`/signup${redirectTo ? `redirectTo=${redirectTo}` : ''}`}>
                   Don&apos;t have an account? Sign up
                 </Link>
               </Anchor>

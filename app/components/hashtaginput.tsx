@@ -85,7 +85,8 @@ export default function HashtagInput({
       <Combobox.Option
         value={item.title}
         key={item.id}
-        active={selected.includes(item)}>
+        active={selected.includes(item)}
+        disabled={selected.includes(item)}>
         <Group gap='sm'>
           {selected.includes(item) ? <CheckIcon size={12} /> : null}
           <span>{item.title}</span>

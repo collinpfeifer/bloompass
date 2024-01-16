@@ -26,7 +26,9 @@ export const action: ActionFunction = async ({
 
   const createTicketSchema = z.object({
     title: z.string().min(1).max(50),
-    description: z.string().min(1).max(500).optional(),
+    description: z
+      .union([z.string().length(0), z.string().min(1), z.string().max(500)])
+      .optional(),
     dateTime: z.string().transform((val) => new Date(val).toISOString()),
     price: z
       .string()
@@ -85,5 +87,6 @@ export const action: ActionFunction = async ({
       newHashtags,
     })
   ).json();
-  return json({ ticket: newTicket, errrors: {} });
+  // return redirect(`/tickets/${newTicket.id}`);
+  return json({ ticket: newTicket, errors: null });
 };

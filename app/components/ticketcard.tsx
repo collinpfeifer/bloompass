@@ -17,7 +17,7 @@ import {
 import classes from '../styles/ticket.module.css';
 import { Hashtag } from '@prisma/client';
 import { convertDateString } from '../utils/convertDateString';
-import { Form, Link } from '@remix-run/react';
+import { Form, Link, useNavigate, useLocation } from '@remix-run/react';
 import { useDisclosure } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { IconEdit, IconSettings, IconTrash } from '@tabler/icons-react';
@@ -39,6 +39,7 @@ export default function TicketCard({
   link,
   userId,
   hashtags,
+  allHashtags,
 }: {
   id: string;
   title: string;
@@ -51,12 +52,15 @@ export default function TicketCard({
   sold: boolean;
   buyerUserId: string | null | undefined;
   hashtags: Hashtag[] | null | undefined;
+  allHashtags?: Hashtag[];
 }) {
   const { dayOfWeek, day, month, year, time } = convertDateString(dateTime);
+  const location = useLocation();
   const [opened, { open, close }] = useDisclosure(false);
   const [editFormOpened, { open: openEdit, close: closeEdit }] =
     useDisclosure(false);
   const [selected, setSelected] = useState<Hashtag[]>(hashtags);
+  const navigate = useNavigate();
   const form = useForm({
     validateInputOnChange: true,
     initialValues: {
@@ -151,9 +155,35 @@ export default function TicketCard({
               onClick={openEdit}>
               Edit Ticket
             </Menu.Item>
-
-            <Form action='/api/tickets/delete' method='post' reloadDocument>
-              <input type='hidden' name='ticketId' value={id} />
+            <Form
+              onSubmit={async () => {
+                const formData = new FormData();
+                formData.append('ticketId', id);
+                const data = await (
+                  await fetch('/api/tickets/delete', {
+                    method: 'POST',
+                    body: formData,
+                  })
+                ).json();
+                if (data.success) {
+                  notifications.show({
+                    title: 'Ticket Deleted',
+                    message: 'Your ticket has been deleted successfully',
+                    color: 'teal',
+                    autoClose: 5000,
+                  });
+                  if (location.pathname === `/tickets/${id}`) {
+                    navigate('/feed');
+                  }
+                } else {
+                  notifications.show({
+                    title: 'Ticket Not Deleted',
+                    message: 'Your ticket could not be deleted',
+                    color: 'red',
+                    autoClose: 5000,
+                  });
+                }
+              }}>
               <Menu.Item
                 leftSection={
                   <IconTrash
@@ -195,6 +225,8 @@ export default function TicketCard({
             formData.append('description', values.description);
             formData.append('dateTime', values.dateTime);
             formData.append('price', String(values.price));
+            console.log(values.hashtags);
+            console.log(values.newHashtags);
             formData.append('hashtags', JSON.stringify(values.hashtags));
             formData.append('newHashtags', JSON.stringify(values.newHashtags));
             const data = await (
@@ -210,6 +242,7 @@ export default function TicketCard({
                 color: 'teal',
                 autoClose: 5000,
               });
+              navigate(`/tickets/${data.ticket.id}`);
             } else {
               notifications.show({
                 title: 'Ticket Not Edited',
@@ -260,7 +293,7 @@ export default function TicketCard({
             value={link}
           />
           <HashtagInput
-            hashtags={hashtags}
+            hashtags={allHashtags}
             error={editForm.errors.hashtags}
             selected={selected}
             setSelected={setSelected}
@@ -280,7 +313,40 @@ export default function TicketCard({
         </Form>
       </Modal>
       <Modal opened={opened} onClose={close} title='Report and/or Refund'>
-        <Form method='post' action='/api/reportorrefund' replace>
+        <Form
+          onSubmit={form.onSubmit(async (values) => {
+            close();
+            const formData = new FormData();
+            formData.append('reason', values.reason);
+            formData.append('refund', String(values.refund));
+            formData.append('message', values.message);
+            formData.append('ticketId', id);
+            formData.append('userId', userId);
+            formData.append('sellerUserId', sellerUserId);
+            formData.append('buyerUserId', buyerUserId);
+            const data = await (
+              await fetch('/api/reportorrefund', {
+                method: 'POST',
+                body: formData,
+              })
+            ).json();
+            if (data.success) {
+              notifications.show({
+                title: 'Report Sent',
+                message: 'Your report has been sent and reviewed soon',
+                color: 'teal',
+                autoClose: 5000,
+              });
+              navigate(`/tickets/selling`);
+            } else {
+              notifications.show({
+                title: 'Report Not Sent',
+                message: 'Your report could not be sent',
+                color: 'red',
+                autoClose: 5000,
+              });
+            }
+          })}>
           <Stack>
             <Select
               withAsterisk
@@ -310,13 +376,7 @@ export default function TicketCard({
               required
               {...form.getInputProps('message')}
             />
-            <input type='hidden' name='ticketId' value={id} />
-            <input type='hidden' name='userId' value={userId} />
-            <input type='hidden' name='sellerUserId' value={sellerUserId} />
-            <input type='hidden' name='buyerUserId' value={buyerUserId} />
-            <Button type='submit' onClick={close}>
-              Send report
-            </Button>
+            <Button type='submit'>Send report</Button>
           </Stack>
         </Form>
       </Modal>

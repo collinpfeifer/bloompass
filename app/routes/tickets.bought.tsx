@@ -3,7 +3,7 @@ import { requireUser } from '../session.server';
 import { getBoughtTicketsByUserId } from '../models/ticket.server';
 import invariant from 'tiny-invariant';
 import HeaderUser from '../components/headeruser';
-import { Box, Stack } from '@mantine/core';
+import { Box, Stack, Title, Text, Flex } from '@mantine/core';
 import { Ticket } from '@prisma/client';
 import { useLoaderData } from '@remix-run/react';
 import TicketCard from '../components/ticketcard';
@@ -42,6 +42,7 @@ export default function TicketsBought() {
             </Group>
           </Form> */}
           <Box m='auto'>
+            <Title c='white'>Your Bought Tickets</Title>
             {tickets.length > 0 ? (
               tickets.map((ticket: Ticket) => (
                 <TicketCard
@@ -60,7 +61,11 @@ export default function TicketsBought() {
                 />
               ))
             ) : (
-              <p>No tickets found</p>
+              <Flex justify='center'>
+                <Text c='white' fw='bold'>
+                  No tickets bought
+                </Text>
+              </Flex>
             )}
           </Box>
         </Stack>

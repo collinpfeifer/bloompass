@@ -1,14 +1,7 @@
-import {
-  ActionFunction,
-  ActionFunctionArgs,
-  LoaderFunction,
-  LoaderFunctionArgs,
-  json,
-  redirect,
-} from '@remix-run/node';
+import { LoaderFunction, LoaderFunctionArgs, json } from '@remix-run/node';
 import { getUser } from '../session.server';
 import { getTickets, searchTicketsByQuery } from '../models/ticket.server';
-import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
+import { Form, Link, useLoaderData, useNavigate } from '@remix-run/react';
 import {
   Box,
   Button,
@@ -22,20 +15,22 @@ import { getHashtags } from '../models/hashtag.server';
 import type { Hashtag, Ticket } from '@prisma/client';
 import TicketCard from '../components/ticketcard';
 import HeaderUser from '../components/headeruser';
-import { z } from 'zod';
 import { useForm } from '@mantine/form';
 import HashtagInput from '../components/hashtaginput';
 import { DateTimePicker } from '@mantine/dates';
-import { useDisclosure, useListState } from '@mantine/hooks';
+import { useDisclosure } from '@mantine/hooks';
 import _ from 'lodash';
 import { useState } from 'react';
 import { notifications } from '@mantine/notifications';
+import { z } from 'zod';
 
 export const loader: LoaderFunction = async ({
   request,
 }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
-  const query = url.searchParams.get('q');
+  const q = url.searchParams.get('query');
+  const querySchema = z.string().min(1).max(500).nullable();
+  const query = querySchema.parse(q);
   const user = await getUser(request);
   const allHashtags = await (await getHashtags()).json();
   if (query)
@@ -52,23 +47,8 @@ export const loader: LoaderFunction = async ({
     });
 };
 
-export const action: ActionFunction = async ({
-  request,
-}: ActionFunctionArgs) => {
-  const formData = Object.fromEntries(await request.formData());
-  const searchSchema = z.object({
-    query: z.string().min(1).max(500),
-  });
-  const { query } = searchSchema.parse(formData);
-  return redirect(`/feed?q=${query}`);
-};
-
 export default function Feed() {
-  const {
-    tickets: feedTickets,
-    hashtags,
-    user,
-  } = useLoaderData<typeof loader>();
+  const { tickets, hashtags, user } = useLoaderData<typeof loader>();
 
   const form = useForm({
     validateInputOnChange: true,
@@ -85,12 +65,10 @@ export default function Feed() {
     },
   });
 
-  const data = useActionData();
-
   const [modalOpened, { open: modalOpen, close: modalClose }] =
     useDisclosure(false);
   const [selected, setSelected] = useState<Hashtag[]>([]);
-  const [tickets, handlers] = useListState<Ticket[]>(feedTickets);
+  const navigate = useNavigate();
 
   const modalForm = useForm({
     validateInputOnChange: true,
@@ -159,15 +137,15 @@ export default function Feed() {
                 body: formData,
               })
             ).json();
-            console.log(data);
             if (data.ticket) {
-              handlers.prepend(data.ticket);
+              // handlers.prepend(data.ticket);
               notifications.show({
                 title: 'Ticket Added',
                 message: 'Your ticket has been added successfully',
                 color: 'teal',
                 autoClose: 5000,
               });
+              navigate(`/tickets/${data.ticket.id}`);
             } else {
               notifications.show({
                 title: 'Ticket Not Added',
@@ -255,7 +233,7 @@ export default function Feed() {
                 </Link>
               </Button>
             ))}
-          <Form method='post'>
+          <Form method='get'>
             <Group>
               <TextInput
                 name='query'
@@ -295,6 +273,7 @@ export default function Feed() {
                   buyerUserId={ticket.buyerUserId}
                   userId={user?.id}
                   hashtags={ticket.hashtags}
+                  allHashtags={hashtags}
                 />
               ))
             ) : (

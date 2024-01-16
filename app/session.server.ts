@@ -71,6 +71,7 @@ export async function requireUser(
     const searchParams = new URLSearchParams([['redirectTo', redirectTo]]);
     throw redirect(`/login?${searchParams}`);
   }
+  if (user?.banned) throw logout(request);
   return user;
 }
 
@@ -101,6 +102,7 @@ export async function getUser(request: Request) {
         banned: true,
       },
     });
+    if (user?.banned) throw logout(request);
     return user;
   } catch {
     throw logout(request);
