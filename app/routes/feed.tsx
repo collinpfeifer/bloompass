@@ -26,9 +26,10 @@ import { z } from 'zod';
 import { useForm } from '@mantine/form';
 import HashtagInput from '../components/hashtaginput';
 import { DateTimePicker } from '@mantine/dates';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useListState } from '@mantine/hooks';
 import _ from 'lodash';
 import { useState } from 'react';
+import { notifications } from '@mantine/notifications';
 
 export const loader: LoaderFunction = async ({
   request,
@@ -63,7 +64,11 @@ export const action: ActionFunction = async ({
 };
 
 export default function Feed() {
-  const { tickets, hashtags, user } = useLoaderData<typeof loader>();
+  const {
+    tickets: feedTickets,
+    hashtags,
+    user,
+  } = useLoaderData<typeof loader>();
 
   const form = useForm({
     validateInputOnChange: true,
@@ -85,8 +90,10 @@ export default function Feed() {
   const [modalOpened, { open: modalOpen, close: modalClose }] =
     useDisclosure(false);
   const [selected, setSelected] = useState<Hashtag[]>([]);
+  const [tickets, handlers] = useListState<Ticket[]>(feedTickets);
 
   const modalForm = useForm({
+    validateInputOnChange: true,
     initialValues: {
       title: '',
       description: '',
@@ -96,7 +103,35 @@ export default function Feed() {
       hashtags: [],
       newHashtags: [],
     },
-    validate: {},
+    validate: {
+      title: (val) => {
+        if (val.length < 1) return 'Title must be at least 1 character';
+        if (val.length > 50) return 'Title must be less than 50 characters';
+        return false;
+      },
+      description: (val) => {
+        if (val.length > 500)
+          return 'Description must be less than 500 characters';
+        return false;
+      },
+      dateTime: (val) => {
+        if (!val) return 'Date and time is required';
+        if (new Date(val).getTime() < Date.now())
+          return 'Date and time must be in the future';
+        return false;
+      },
+      price: (val) => {
+        if (!val) return 'Price is required';
+        if (val < 0) return 'Price must be greater than 0';
+        return false;
+      },
+      link: (val) => {
+        if (!val) return 'Link is required';
+        if (!val.includes('http://') && !val.includes('https://'))
+          return 'Link must be a valid URL';
+        return false;
+      },
+    },
   });
 
   // limit tickets to 30 of the most recently created / closest to starting / cheapest
@@ -109,6 +144,7 @@ export default function Feed() {
       <Modal opened={modalOpened} onClose={modalClose} title='Add Ticket'>
         <Form
           onSubmit={modalForm.onSubmit(async (values) => {
+            modalClose();
             const formData = new FormData();
             formData.append('title', values.title);
             formData.append('description', values.description);
@@ -117,10 +153,29 @@ export default function Feed() {
             formData.append('link', values.link);
             formData.append('hashtags', JSON.stringify(values.hashtags));
             formData.append('newHashtags', JSON.stringify(values.newHashtags));
-            await fetch('/api/tickets/create', {
-              method: 'POST',
-              body: formData,
-            });
+            const data = await (
+              await fetch('/api/tickets/create', {
+                method: 'POST',
+                body: formData,
+              })
+            ).json();
+            console.log(data);
+            if (data.ticket) {
+              handlers.prepend(data.ticket);
+              notifications.show({
+                title: 'Ticket Added',
+                message: 'Your ticket has been added successfully',
+                color: 'teal',
+                autoClose: 5000,
+              });
+            } else {
+              notifications.show({
+                title: 'Ticket Not Added',
+                message: 'Your ticket could not be added',
+                color: 'red',
+                autoClose: 5000,
+              });
+            }
           })}>
           <TextInput
             label='Title'
@@ -128,22 +183,24 @@ export default function Feed() {
             name='title'
             required
             {...modalForm.getInputProps('title')}
-            error={data?.errors?.title || modalForm.errors.title}
+            error={modalForm.errors.title}
           />
           <TextInput
             label='Description'
             placeholder='Description'
             name='description'
             {...modalForm.getInputProps('description')}
-            error={data?.errors?.description || modalForm.errors.description}
+            error={modalForm.errors.description}
           />
           <DateTimePicker
             label='Date and Time'
+            clearable
             placeholder='Date and Time'
+            valueFormat='MMM DD YYYY hh:mm A'
             required
             name='dateTime'
             {...modalForm.getInputProps('dateTime')}
-            error={data?.errors?.dateTime || modalForm.errors.dateTime}
+            error={modalForm.errors.dateTime}
           />
           <NumberInput
             label='Price'
@@ -151,7 +208,7 @@ export default function Feed() {
             name='price'
             required
             {...modalForm.getInputProps('price')}
-            error={data?.errors?.price || modalForm.errors.price}
+            error={modalForm.errors.price}
           />
           <TextInput
             label='Link'
@@ -159,19 +216,17 @@ export default function Feed() {
             name='link'
             required
             {...modalForm.getInputProps('link')}
-            error={data?.errors?.link || modalForm.errors.link}
+            error={modalForm.errors.link}
           />
           <HashtagInput
             hashtags={hashtags}
-            error={data?.errors?.hashtags || modalForm.errors.hashtags}
+            error={modalForm.errors.hashtags}
             selected={selected}
             setSelected={setSelected}
           />
           <Button
             type='submit'
             onClick={() => {
-              modalClose();
-              console.log(selected)
               const [existingHashtags, newHashtags] = _.partition(
                 selected,
                 (item: Hashtag) => item.id.substring(0, 4) !== 'new_'
@@ -213,7 +268,14 @@ export default function Feed() {
                 <Button disabled={form.values.query.length < 2} type='submit'>
                   Search
                 </Button>
-                <Button>Clear</Button>
+                <Button>
+                  <Link
+                    prefetch='render'
+                    to='/feed'
+                    style={{ color: 'white', textDecoration: 'none' }}>
+                    Clear
+                  </Link>
+                </Button>
               </Group>
             </Group>
           </Form>

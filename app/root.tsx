@@ -1,8 +1,12 @@
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
+import '@mantine/notifications/styles.css';
+import '@mantine/nprogress/styles.css';
 
 import { MantineProvider, Stack, createTheme } from '@mantine/core';
 import { cssBundleHref } from '@remix-run/css-bundle';
+import { Notifications } from '@mantine/notifications';
+import { NavigationProgress } from '@mantine/nprogress';
 import type { LinksFunction } from '@remix-run/node';
 import {
   Links,
@@ -48,6 +52,8 @@ export default function App() {
       </head>
       <body>
         <MantineProvider theme={theme}>
+          <Notifications />
+          <NavigationProgress />
           <Stack
             align='center'
             justify='center'

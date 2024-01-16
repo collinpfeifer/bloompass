@@ -102,7 +102,6 @@ export default function HashtagInput({
         <PillsInput
           onClick={() => combobox.openDropdown()}
           error={error}
-          withAsterisk
           label='Hashtags'>
           <Pill.Group>
             {values}

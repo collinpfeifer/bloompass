@@ -64,6 +64,11 @@ export async function createAccountLink({
 //   return paymentIntent;
 // }
 
+export async function createLoginLink(accountId: string) {
+  const loginLink = await stripe.accounts.createLoginLink(accountId);
+  return loginLink;
+}
+
 export async function createCheckoutSession({
   buyerUserId,
   successUrl,
@@ -142,14 +147,16 @@ export async function createCheckoutSession({
       buyerUserId,
       sellerUserId: ticket.sellerUserId,
     },
-    // payment_intent_data: {
-    //   transfer_data: {
-    //     destination: sellerUser.stripeAccountId,
-    //     amount: Math.round(
-    //       (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100
-    //     ),
-    //   },
-    // },
+    payment_intent_data: {
+      transfer_data: {
+        destination: sellerUser.stripeAccountId,
+        amount: Math.round(
+          (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100
+        ),
+      },
+      transfer_group: ticket.id,
+      statement_descriptor: `Bloompass ${ticket.title.substring(0, 12)}`,
+    },
     success_url: successUrl,
     cancel_url: cancelUrl,
   });
@@ -160,23 +167,30 @@ export async function retrieveCheckoutSession(sessionId: string) {
   return session;
 }
 
-// async function payout(accountId: string) {
-//   const balance = await stripe.balance.retrieve({
-//     stripeAccount: accountId,
-//   });
+export async function payout({
+  accountId,
+  name,
+}: {
+  accountId: string;
+  name: string;
+}) {
+  const balance = await stripe.balance.retrieve({
+    stripeAccount: accountId,
+  });
 
-//   const { amount, currency } = balance.available[0];
+  console.log('balance', balance);
+  const { amount, currency } = balance.available[0];
 
-//   const payout = await stripe.payouts.create(
-//     {
-//       amount,
-//       currency,
-//       statement_descriptor: 'Bloompass Payout',
-//     },
-//     {
-//       stripeAccount: accountId,
-//     }
-//   );
+  const payout = await stripe.payouts.create(
+    {
+      amount,
+      currency,
+      statement_descriptor: `Bloompass ${name.substring(0, 12)}`,
+    },
+    {
+      stripeAccount: accountId,
+    }
+  );
 
-//   return payout;
-// }
+  return payout;
+}

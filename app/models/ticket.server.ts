@@ -168,6 +168,8 @@ export async function updateTicket({
   title,
   sold,
   soldAt,
+  price,
+  dateTime,
   description,
   hashtags,
   buyerUserId,
@@ -177,70 +179,37 @@ export async function updateTicket({
   sold: boolean | undefined;
   soldAt: string | undefined;
   title: string | undefined;
+  price: number | undefined;
+  dateTime: string | undefined;
   description: string | undefined;
   buyerUserId: string | undefined;
-  hashtags: Hashtag[] | undefined;
-  newHashtags: Hashtag[] | undefined;
+  hashtags: Hashtag[];
+  newHashtags: Hashtag[];
 }) {
-  if (hashtags && newHashtags) {
-    const ticket = await prisma.ticket.update({
-      where: { id },
-      data: {
-        title,
-        sold,
-        soldAt,
-        description,
-        buyerUserId,
-        hashtags: {
-          connect: [...hashtags.map((hashtag) => ({ id: hashtag.id }))],
-          create: [...newHashtags.map((hashtag) => ({ title: hashtag.title }))],
-        },
+  const ticket = await prisma.ticket.update({
+    where: { id },
+    data: {
+      title,
+      sold,
+      soldAt,
+      description,
+      price,
+      dateTime,
+      buyerUserId,
+      hashtags: {
+        connect: [...hashtags.map((hashtag) => ({ id: hashtag.id }))],
+        create: [...newHashtags.map((hashtag) => ({ title: hashtag.title }))],
       },
-    });
-    return json(ticket);
-  } else if (hashtags) {
-    const ticket = await prisma.ticket.update({
-      where: { id },
-      data: {
-        title,
-        sold,
-        soldAt,
-        description,
-        buyerUserId,
-        hashtags: {
-          connect: [...hashtags.map((hashtag) => ({ id: hashtag.id }))],
-        },
-      },
-    });
-    return json(ticket);
-  } else if (newHashtags) {
-    const ticket = await prisma.ticket.update({
-      where: { id },
-      data: {
-        title,
-        sold,
-        soldAt,
-        description,
-        buyerUserId,
-        hashtags: {
-          create: [...newHashtags.map((hashtag) => ({ title: hashtag.title }))],
-        },
-      },
-    });
-    return json(ticket);
-  } else {
-    const ticket = await prisma.ticket.update({
-      where: { id },
-      data: {
-        title,
-        sold,
-        soldAt,
-        description,
-        buyerUserId,
-      },
-    });
-    return json(ticket);
-  }
+    },
+  });
+  return json(ticket);
+}
+
+export async function deleteTicket({ id }: { id: string }) {
+  const ticket = await prisma.ticket.delete({
+    where: { id },
+  });
+  return json(ticket);
 }
 
 export async function getSellingTicketsByUserId({

@@ -1,19 +1,12 @@
-import {
-  ActionFunction,
-  ActionFunctionArgs,
-  json,
-  redirect,
-} from '@remix-run/node';
+import { ActionFunction, ActionFunctionArgs, json } from '@remix-run/node';
 import { z } from 'zod';
-import { createTicket } from '../models/ticket.server';
-import { requireUser } from '../session.server';
+import { updateTicket } from '../models/ticket.server';
 
 export const action: ActionFunction = async ({
   request,
 }: ActionFunctionArgs) => {
-  const user = await requireUser(request);
-  if (!user.onboardingComplete) return redirect('/api/stripe/authorize');
   const formData = Object.fromEntries(await request.formData());
+  console.log(formData);
 
   const stringToJSONSchema = z.string().transform((str, ctx) => {
     try {
@@ -24,15 +17,17 @@ export const action: ActionFunction = async ({
     }
   });
 
-  const createTicketSchema = z.object({
+  const editTicketSchema = z.object({
+    id: z.string(),
     title: z.string().min(1).max(50),
-    description: z.string().min(1).max(500).optional(),
+    description: z
+      .union([z.string().length(0), z.string().min(1), z.string().max(500)])
+      .optional(),
     dateTime: z.string().transform((val) => new Date(val).toISOString()),
     price: z
       .string()
       .transform((val) => Number(val))
       .refine((val) => val > 0),
-    link: z.string().url(),
     hashtags: stringToJSONSchema.pipe(
       z.array(
         z.object({
@@ -55,8 +50,9 @@ export const action: ActionFunction = async ({
     ),
   });
 
-  const result = createTicketSchema.safeParse(formData);
-  if (!result.success)
+  const result = editTicketSchema.safeParse(formData);
+
+  if (!result.success) {
     return json({
       ticket: null,
       errors: {
@@ -64,26 +60,27 @@ export const action: ActionFunction = async ({
         description: result.error.issues[0].message,
         dateTime: result.error.issues[0].message,
         price: result.error.issues[0].message,
-        link: result.error.issues[0].message,
         hashtags: result.error.issues[0].message,
         newHashtags: result.error.issues[0].message,
       },
     });
+  }
 
-  const { title, description, dateTime, price, link, hashtags, newHashtags } =
+  console.log('data', result.data);
+
+  const { id, title, description, dateTime, price, hashtags, newHashtags } =
     result.data;
 
   const newTicket = await (
-    await createTicket({
-      request,
+    await updateTicket({
+      id,
       title,
       description,
       dateTime,
       price,
-      link,
       hashtags,
       newHashtags,
     })
   ).json();
-  return json({ ticket: newTicket, errrors: {} });
+  return json({ ticket: newTicket, errors: {} });
 };

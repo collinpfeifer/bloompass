@@ -3,6 +3,7 @@ import stripe from '../utils/stripe.server';
 import invariant from 'tiny-invariant';
 import { getTicket, updateTicket } from '../models/ticket.server';
 import { getUserById } from '../models/user.server';
+import { payout } from '../models/stripe.server';
 
 export const action: ActionFunction = async ({
   request,
@@ -30,6 +31,7 @@ export const action: ActionFunction = async ({
         if (ticket.sold) {
           await stripe.refunds.create({
             payment_intent: checkoutSession.payment_intent,
+            reverse_transfer: true,
           });
           console.log('💰 refund success!');
         } else {
@@ -38,13 +40,15 @@ export const action: ActionFunction = async ({
           ).json();
           invariant(sellerUser, 'No seller user');
           invariant(sellerUser.stripeAccountId, 'No seller stripe account id');
-          await stripe.transfers.create({
-            amount: Math.round(
-              (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100
-            ),
-            currency: 'usd',
-            destination: sellerUser.stripeAccountId,
-          });
+          // const transfer = await stripe.transfers.create({
+          //   amount: Math.round(
+          //     (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100
+          //   ),
+          //   currency: 'usd',
+          //   destination: sellerUser.stripeAccountId,
+          //   transfer_group: ticket.id,
+          // });
+          // console.log(transfer);
           await (
             await updateTicket({
               id: ticketId,
@@ -57,6 +61,10 @@ export const action: ActionFunction = async ({
               newHashtags: undefined,
             })
           ).json();
+          // await payout({
+          //   accountId: sellerUser.stripeAccountId,
+          //   name: ticket.title,
+          // });
           console.log('💰 payment success!');
         }
       }

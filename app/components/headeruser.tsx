@@ -14,7 +14,6 @@ import {
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import {
   IconLogout,
-  IconSettings,
   IconChevronDown,
   IconPigMoney,
   IconTicket,
@@ -114,6 +113,7 @@ export default function HeaderUser({ user }: { user: User }) {
                   </Link>
                 </Menu.Item>
                 <Menu.Label>Settings</Menu.Label>
+                {/* <Form method='post' action='/api.stripe.dashboard'>
                 <Menu.Item
                   leftSection={
                     <IconSettings
@@ -121,8 +121,9 @@ export default function HeaderUser({ user }: { user: User }) {
                       stroke={1.5}
                     />
                   }>
-                  Account settings
+                  Payment Dashboard
                 </Menu.Item>
+                </Form> */}
                 <Form method='post' action='/logout'>
                   <Menu.Item
                     leftSection={

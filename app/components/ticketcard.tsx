@@ -10,6 +10,9 @@ import {
   Checkbox,
   Stack,
   NumberFormatter,
+  Menu,
+  NumberInput,
+  TextInput,
 } from '@mantine/core';
 import classes from '../styles/ticket.module.css';
 import { Hashtag } from '@prisma/client';
@@ -17,6 +20,12 @@ import { convertDateString } from '../utils/convertDateString';
 import { Form, Link } from '@remix-run/react';
 import { useDisclosure } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
+import { IconEdit, IconSettings, IconTrash } from '@tabler/icons-react';
+import { DateTimePicker } from '@mantine/dates';
+import _ from 'lodash';
+import HashtagInput from './hashtaginput';
+import { useState } from 'react';
+import { notifications } from '@mantine/notifications';
 
 export default function TicketCard({
   id,
@@ -45,11 +54,49 @@ export default function TicketCard({
 }) {
   const { dayOfWeek, day, month, year, time } = convertDateString(dateTime);
   const [opened, { open, close }] = useDisclosure(false);
+  const [editFormOpened, { open: openEdit, close: closeEdit }] =
+    useDisclosure(false);
+  const [selected, setSelected] = useState<Hashtag[]>(hashtags);
   const form = useForm({
+    validateInputOnChange: true,
     initialValues: {
       reason: '',
       refund: false,
       message: '',
+    },
+  });
+  const editForm = useForm({
+    validateInputOnChange: true,
+    initialValues: {
+      title: title,
+      description: description,
+      price: price,
+      dateTime: new Date(dateTime),
+      hashtags: hashtags,
+      newHashtags: [],
+    },
+    validate: {
+      title: (val) => {
+        if (val.length < 1) return 'Title must be at least 1 character';
+        if (val.length > 50) return 'Title must be less than 50 characters';
+        return false;
+      },
+      description: (val) => {
+        if (val.length > 500)
+          return 'Description must be less than 500 characters';
+        return false;
+      },
+      dateTime: (val) => {
+        if (!val) return 'Date and time is required';
+        if (new Date(val).getTime() < Date.now())
+          return 'Date and time must be in the future';
+        return false;
+      },
+      price: (val) => {
+        if (!val) return 'Price is required';
+        if (val < 0) return 'Price must be greater than 0';
+        return false;
+      },
     },
   });
 
@@ -78,6 +125,50 @@ export default function TicketCard({
           </Button>
         </Form>
       );
+    } else if (sellerUserId === userId && !sold) {
+      return (
+        <Menu
+          width={260}
+          position='bottom-end'
+          transitionProps={{ transition: 'pop-top-right' }}
+          withinPortal>
+          <Menu.Target>
+            <IconSettings
+              style={{ width: 20, height: 20 }}
+              stroke={1.5}
+              color='white'
+            />
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item
+              leftSection={
+                <IconEdit
+                  style={{ width: 16, height: 16 }}
+                  stroke={1.5}
+                  color='green'
+                />
+              }
+              onClick={openEdit}>
+              Edit Ticket
+            </Menu.Item>
+
+            <Form action='/api/tickets/delete' method='post' reloadDocument>
+              <input type='hidden' name='ticketId' value={id} />
+              <Menu.Item
+                leftSection={
+                  <IconTrash
+                    style={{ width: 16, height: 16 }}
+                    stroke={1.5}
+                    color='red'
+                  />
+                }
+                type='submit'>
+                Delete Ticket
+              </Menu.Item>
+            </Form>
+          </Menu.Dropdown>
+        </Menu>
+      );
     }
     // else if (sellerUserId === userId && !buyerUserId) {
     //   return (
@@ -94,8 +185,102 @@ export default function TicketCard({
   }
   return (
     <>
+      <Modal opened={editFormOpened} onClose={closeEdit} title='Edit Ticket'>
+        <Form
+          onSubmit={editForm.onSubmit(async (values) => {
+            closeEdit();
+            const formData = new FormData();
+            formData.append('id', id);
+            formData.append('title', values.title);
+            formData.append('description', values.description);
+            formData.append('dateTime', values.dateTime);
+            formData.append('price', String(values.price));
+            formData.append('hashtags', JSON.stringify(values.hashtags));
+            formData.append('newHashtags', JSON.stringify(values.newHashtags));
+            const data = await (
+              await fetch('/api/tickets/edit', {
+                method: 'POST',
+                body: formData,
+              })
+            ).json();
+            if (data.ticket) {
+              notifications.show({
+                title: 'Ticket Edited',
+                message: 'Your ticket has been edited successfully',
+                color: 'teal',
+                autoClose: 5000,
+              });
+            } else {
+              notifications.show({
+                title: 'Ticket Not Edited',
+                message: 'Your ticket could not be edited',
+                color: 'red',
+                autoClose: 5000,
+              });
+            }
+          })}>
+          <input type='hidden' name='id' value={id} />
+          <TextInput
+            label='Title'
+            placeholder='Title'
+            name='title'
+            required
+            {...editForm.getInputProps('title')}
+            error={editForm.errors.title}
+          />
+          <TextInput
+            label='Description'
+            placeholder='Description'
+            name='description'
+            {...editForm.getInputProps('description')}
+            error={editForm.errors.description}
+          />
+          <DateTimePicker
+            label='Date and Time'
+            placeholder='Date and Time'
+            valueFormat='MMM DD YYYY hh:mm A'
+            required
+            name='dateTime'
+            {...editForm.getInputProps('dateTime')}
+            error={editForm.errors.dateTime}
+          />
+          <NumberInput
+            label='Price'
+            placeholder='Price'
+            name='price'
+            required
+            {...editForm.getInputProps('price')}
+            error={editForm.errors.price}
+          />
+          <TextInput
+            label='Link'
+            placeholder='Link'
+            name='link'
+            disabled={true}
+            value={link}
+          />
+          <HashtagInput
+            hashtags={hashtags}
+            error={editForm.errors.hashtags}
+            selected={selected}
+            setSelected={setSelected}
+          />
+          <Button
+            type='submit'
+            onClick={() => {
+              const [existingHashtags, newHashtags] = _.partition(
+                selected,
+                (item: Hashtag) => item.id.substring(0, 4) !== 'new_'
+              );
+              editForm.setFieldValue('hashtags', existingHashtags);
+              editForm.setFieldValue('newHashtags', newHashtags);
+            }}>
+            Submit
+          </Button>
+        </Form>
+      </Modal>
       <Modal opened={opened} onClose={close} title='Report and/or Refund'>
-        <Form method='post' action='/api/reportorrefund'>
+        <Form method='post' action='/api/reportorrefund' replace>
           <Stack>
             <Select
               withAsterisk
@@ -148,7 +333,9 @@ export default function TicketCard({
             {sold && sellerUserId === userId && (
               <Badge color='green'>Sold</Badge>
             )}
-            {sellerUserId === userId && <Badge color='blue'>Selling</Badge>}
+            {sellerUserId === userId && !sold && (
+              <Badge color='blue'>Selling</Badge>
+            )}
             {sold && buyerUserId === userId && (
               <Badge color='red'>Bought</Badge>
             )}
@@ -164,7 +351,7 @@ export default function TicketCard({
           </Card.Section>
         )}
 
-        {hashtags?.length > 0 && (
+        {hashtags && hashtags.length > 0 && (
           <Card.Section className={classes.section} mt='md'>
             <Text fz='sm' c='dimmed' className={classes.label}>
               Hashtags
