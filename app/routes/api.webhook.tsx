@@ -3,7 +3,6 @@ import stripe from '../utils/stripe.server';
 import invariant from 'tiny-invariant';
 import { getTicket, updateTicket } from '../models/ticket.server';
 import { getUserById } from '../models/user.server';
-import { payout } from '../models/stripe.server';
 
 export const action: ActionFunction = async ({
   request,
@@ -57,8 +56,11 @@ export const action: ActionFunction = async ({
               buyerUserId,
               sold: true,
               soldAt: new Date().toISOString(),
-              hashtags: undefined,
-              newHashtags: undefined,
+              hashtags: [],
+              price: undefined,
+              dateTime: undefined,
+              newHashtags: [],
+              removedHashtags: [],
             })
           ).json();
           // await payout({

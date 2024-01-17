@@ -78,6 +78,7 @@ export default function TicketCard({
       dateTime: new Date(dateTime),
       hashtags: hashtags,
       newHashtags: [],
+      removedHashtags: [],
     },
     validate: {
       title: (val) => {
@@ -225,10 +226,12 @@ export default function TicketCard({
             formData.append('description', values.description);
             formData.append('dateTime', values.dateTime);
             formData.append('price', String(values.price));
-            console.log(values.hashtags);
-            console.log(values.newHashtags);
             formData.append('hashtags', JSON.stringify(values.hashtags));
             formData.append('newHashtags', JSON.stringify(values.newHashtags));
+            formData.append(
+              'removedHashtags',
+              JSON.stringify(values.removedHashtags)
+            );
             const data = await (
               await fetch('/api/tickets/edit', {
                 method: 'POST',
@@ -305,8 +308,10 @@ export default function TicketCard({
                 selected,
                 (item: Hashtag) => item.id.substring(0, 4) !== 'new_'
               );
+              const removedHashtags = _.difference(hashtags, existingHashtags);
               editForm.setFieldValue('hashtags', existingHashtags);
               editForm.setFieldValue('newHashtags', newHashtags);
+              editForm.setFieldValue('removedHashtags', removedHashtags);
             }}>
             Submit
           </Button>
@@ -337,7 +342,6 @@ export default function TicketCard({
                 color: 'teal',
                 autoClose: 5000,
               });
-              navigate(`/tickets/selling`);
             } else {
               notifications.show({
                 title: 'Report Not Sent',

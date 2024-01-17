@@ -21,7 +21,8 @@ export const action: ActionFunction = async ({
     buyerUserId: z.string(),
   });
   const result = reportSchema.safeParse(formData);
-  if (!result.success) return json({ errors: result.error.issues[0].message });
+  if (!result.success)
+    return json({ success: false, errors: result.error.issues[0].message });
   const {
     reason,
     refund,
@@ -40,6 +41,6 @@ export const action: ActionFunction = async ({
       refund === 'on'
     }</p><p>Message: ${message}</p> <p>Ticket ID: ${ticketId}</p> <p>User ID: ${userId}</p> <p>Seller User ID: ${sellerUserId}</p> <p> Buyer User ID: ${buyerUserId}</p>`,
   });
-  if (error) return redirect('/tickets/bought');
-  return json({});
+  if (error) return json({ success: false, errors: error.message });
+  return json({ success: true, errors: null });
 };

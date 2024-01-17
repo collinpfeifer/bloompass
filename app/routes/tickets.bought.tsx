@@ -21,7 +21,6 @@ export const loader: LoaderFunction = async ({
 
 export default function TicketsBought() {
   const { user, tickets } = useLoaderData<typeof loader>();
-  console.log(tickets)
   return (
     <>
       <HeaderUser user={user} />

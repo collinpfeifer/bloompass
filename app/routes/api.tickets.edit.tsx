@@ -78,6 +78,7 @@ export const action: ActionFunction = async ({
       price,
       hashtags,
       newHashtags,
+      removedHashtags,
     })
   ).json();
   // return redirect(`/tickets/${newTicket.id}`);

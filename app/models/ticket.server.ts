@@ -174,6 +174,7 @@ export async function updateTicket({
   hashtags,
   buyerUserId,
   newHashtags,
+  removedHashtags,
 }: {
   id: string;
   sold: boolean | undefined;
@@ -185,6 +186,7 @@ export async function updateTicket({
   buyerUserId: string | undefined;
   hashtags: Hashtag[];
   newHashtags: Hashtag[];
+  removedHashtags: Hashtag[];
 }) {
   const ticket = await prisma.ticket.update({
     where: { id },
@@ -197,6 +199,7 @@ export async function updateTicket({
       dateTime,
       buyerUserId,
       hashtags: {
+        disconnect: [...removedHashtags.map((hashtag) => ({ id: hashtag.id }))],
         connect: [...hashtags.map((hashtag) => ({ id: hashtag.id }))],
         create: [...newHashtags.map((hashtag) => ({ title: hashtag.title }))],
       },
