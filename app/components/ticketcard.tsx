@@ -333,7 +333,7 @@ export default function TicketCard({
               await fetch('/api/reportorrefund', {
                 method: 'POST',
                 body: formData,
-              })
+              }) 
             ).json();
             if (data.success) {
               notifications.show({

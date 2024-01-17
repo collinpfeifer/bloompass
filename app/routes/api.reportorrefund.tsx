@@ -2,7 +2,6 @@ import {
   ActionFunction,
   ActionFunctionArgs,
   json,
-  redirect,
 } from '@remix-run/node';
 import resend from '../utils/resend.server';
 import { z } from 'zod';

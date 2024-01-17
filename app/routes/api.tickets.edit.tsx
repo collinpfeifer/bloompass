@@ -6,7 +6,6 @@ export const action: ActionFunction = async ({
   request,
 }: ActionFunctionArgs) => {
   const formData = Object.fromEntries(await request.formData());
-  console.log(formData);
 
   const stringToJSONSchema = z.string().transform((str, ctx) => {
     try {
@@ -48,6 +47,16 @@ export const action: ActionFunction = async ({
         })
       )
     ),
+    removedHashtags: stringToJSONSchema.pipe(
+      z.array(
+        z.object({
+          id: z.string(),
+          title: z.string(),
+          createdAt: z.string().transform((val) => new Date(val).toISOString()),
+          updatedAt: z.string().transform((val) => new Date(val).toISOString()),
+        })
+      )
+    ),
   });
 
   const result = editTicketSchema.safeParse(formData);
@@ -62,11 +71,12 @@ export const action: ActionFunction = async ({
         price: result.error.issues[0].message,
         hashtags: result.error.issues[0].message,
         newHashtags: result.error.issues[0].message,
+        removedHashtags: result.error.issues[0].message,
       },
     });
   }
 
-  const { id, title, description, dateTime, price, hashtags, newHashtags } =
+  const { id, title, description, dateTime, price, hashtags, newHashtags, removedHashtags } =
     result.data;
 
   const newTicket = await (
