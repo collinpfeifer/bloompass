@@ -10,6 +10,7 @@ import {
   NumberInput,
   Stack,
   TextInput,
+  Text,
 } from '@mantine/core';
 import { getHashtags } from '../models/hashtag.server';
 import type { Hashtag, Ticket } from '@prisma/client';
@@ -246,13 +247,13 @@ export default function Feed() {
                 <Button disabled={form.values.query.length < 2} type='submit'>
                   Search
                 </Button>
-                <Button>
-                  <Link
-                    prefetch='render'
-                    to='/feed'
-                    style={{ color: 'white', textDecoration: 'none' }}>
-                    Clear
-                  </Link>
+                <Button
+                  type='reset'
+                  onClick={() => {
+                    form.reset();
+                    navigate('/feed');
+                  }}>
+                  Clear
                 </Button>
               </Group>
             </Group>
@@ -277,7 +278,7 @@ export default function Feed() {
                 />
               ))
             ) : (
-              <p>No tickets found</p>
+              <Text c='white'>No tickets found</Text>
             )}
           </Box>
         </Stack>

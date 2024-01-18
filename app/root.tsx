@@ -1,20 +1,30 @@
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import '@mantine/notifications/styles.css';
-import '@mantine/nprogress/styles.css';
 
-import { MantineProvider, Stack, createTheme } from '@mantine/core';
+import {
+  Button,
+  Container,
+  Group,
+  MantineProvider,
+  Stack,
+  Title,
+  createTheme,
+  Text,
+} from '@mantine/core';
 import { cssBundleHref } from '@remix-run/css-bundle';
 import { Notifications } from '@mantine/notifications';
-import { NavigationProgress } from '@mantine/nprogress';
+import classes from './styles/servererror.module.css';
 import type { LinksFunction } from '@remix-run/node';
 import {
+  Link,
   Links,
   LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteError,
 } from '@remix-run/react';
 import Footer from './components/footer';
 
@@ -40,8 +50,45 @@ const theme = createTheme({
   black: '#000',
 });
 
+export function ErrorBoundary() {
+  const error = useRouteError();
+  console.error(error);
+  return (
+    <html lang='en'>
+      <head>
+        <title>Oh no!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <div className={classes.root}>
+          <Container>
+            <div className={classes.label}>500</div>
+            <Title className={classes.title}>
+              Something bad just happened...
+            </Title>
+            <Text size='lg' ta='center' className={classes.description}>
+              Our servers could not handle your request. Don&apos;t worry, our
+              development team was already notified. Try refreshing the page.
+            </Text>
+            <Group justify='center'>
+              <Button variant='white' size='md'>
+                <Link
+                  to='/feed'
+                  style={{ textDecoration: 'none'}}>
+                  Refresh the page
+                </Link>
+              </Button>
+            </Group>
+          </Container>
+        </div>
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+
 export default function App() {
-  // const navigation = useNavigation();
   return (
     <html lang='en'>
       <head>
@@ -53,7 +100,6 @@ export default function App() {
       <body>
         <MantineProvider theme={theme}>
           <Notifications />
-          <NavigationProgress />
           <Stack
             align='center'
             justify='center'
@@ -64,7 +110,6 @@ export default function App() {
 
               backgroundAttachment: 'fixed',
             })}>
-            {/* {navigation.state !== 'idle' ? <Loader color='blue' /> : null} */}
             <Outlet />
             <ScrollRestoration />
             <Scripts />

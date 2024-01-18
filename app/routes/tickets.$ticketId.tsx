@@ -26,6 +26,7 @@ export const loader: LoaderFunction = async ({
 }: LoaderFunctionArgs) => {
   const user = await getUser(request);
   const id = params.ticketId;
+  console.log(id);
   if (!id) return redirect('/feed');
   const ticket = await (await getTicket({ id })).json();
   const allHashtags = await (await getHashtags()).json();

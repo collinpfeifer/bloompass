@@ -141,7 +141,7 @@ export default function TicketCard({
             <IconSettings
               style={{ width: 20, height: 20 }}
               stroke={1.5}
-              color='white'
+              color='black'
             />
           </Menu.Target>
           <Menu.Dropdown>
@@ -173,8 +173,13 @@ export default function TicketCard({
                     color: 'teal',
                     autoClose: 5000,
                   });
-                  if (location.pathname === `/tickets/${id}`) {
+                  if (
+                    location.pathname === `/tickets/${id}` ||
+                    location.pathname === '/feed'
+                  ) {
                     navigate('/feed');
+                  } else if (location.pathname === '/tickets/selling') {
+                    navigate('/tickets/selling');
                   }
                 } else {
                   notifications.show({
@@ -326,14 +331,14 @@ export default function TicketCard({
             formData.append('refund', String(values.refund));
             formData.append('message', values.message);
             formData.append('ticketId', id);
-            formData.append('userId', userId);
+            if (userId) formData.append('userId', userId);
             formData.append('sellerUserId', sellerUserId);
-            formData.append('buyerUserId', buyerUserId);
+            if (buyerUserId) formData.append('buyerUserId', buyerUserId);
             const data = await (
               await fetch('/api/reportorrefund', {
                 method: 'POST',
                 body: formData,
-              }) 
+              })
             ).json();
             if (data.success) {
               notifications.show({
@@ -388,7 +393,7 @@ export default function TicketCard({
         <Group justify='space-between' mt='md'>
           <div>
             <Text fw={500}>{title}</Text>
-            <Text fz='xs' c='dimmed'>
+            <Text fz='xs' c='dimmed' maw='150px'>
               {description}
             </Text>
           </div>
