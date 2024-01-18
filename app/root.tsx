@@ -76,7 +76,7 @@ export function ErrorBoundary() {
                 <Button variant='white' size='md'>
                   <Link
                     to='/feed'
-                    style={{ textDecoration: 'none', color: 'lightblue' }}>
+                    style={{ textDecoration: 'none', color: 'blue' }}>
                     Refresh the page
                   </Link>
                 </Button>

@@ -141,7 +141,11 @@ export default function HeaderUser({ user }: { user: User }) {
           ) : (
             <Button>
               <Text fw={500} size='sm' lh={1} mr={3}>
-                <Link to='/login'>Login</Link>
+                <Link
+                  to='/login'
+                  style={{ textDecoration: 'none', color: 'white' }}>
+                  Login
+                </Link>
               </Text>
             </Button>
           )}
