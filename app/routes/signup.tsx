@@ -165,7 +165,7 @@ export default function SignUp() {
               c='dimmed'
               className='md:text-md text-xl lg:text-sm'>
               <Link
-                to={`/login${redirectTo ? `redirectTo=${redirectTo}` : ''}`}>
+                to={`/login${redirectTo ? `?redirectTo=${redirectTo}` : ''}`}>
                 Already have a user account? Login
               </Link>
             </Anchor>
