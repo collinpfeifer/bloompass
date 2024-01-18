@@ -26,6 +26,7 @@ export const loader: LoaderFunction = async ({
   params,
 }: LoaderFunctionArgs) => {
   const user = await getUser(request);
+  console.log(user);
   const id = params.ticketId;
   console.log(id);
   if (!id) return redirect('/feed');
@@ -64,7 +65,7 @@ export default function Ticket() {
           hashtags={ticket.hashtags}
           allHashtags={hashtags}
         />
-        {user.id === ticket.sellerUserId && (
+        {user && user.id === ticket.sellerUserId && (
           <>
             <Text fw='bold' c='white'>
               Share your Ticket to Sell Faster! 🏃🥳

@@ -74,7 +74,9 @@ export function ErrorBoundary() {
               </Text>
               <Group justify='center'>
                 <Button variant='white' size='md'>
-                  <Link to='/feed' style={{ textDecoration: 'none' }}>
+                  <Link
+                    to='/feed'
+                    style={{ textDecoration: 'none', color: 'lightblue' }}>
                     Refresh the page
                   </Link>
                 </Button>
