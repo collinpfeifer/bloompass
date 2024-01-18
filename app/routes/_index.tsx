@@ -2,6 +2,9 @@ import { Overlay, Container, Title, Button } from '@mantine/core';
 import { Link } from '@remix-run/react';
 import HeaderSimple from '../components/headersimple';
 import classes from '../styles/index.module.css';
+import { MetaFunction } from '@remix-run/node';
+
+export const meta: MetaFunction = () => [{ title: 'Bloompass' }];
 
 export default function Index() {
   return (
@@ -17,7 +20,9 @@ export default function Index() {
           Resell your tickets to other true fans.
         </Title>
         <Title order={2} className={classes.description} mt='xl'>
-          Bloompass is what ticketing should be. We&apos;re a ticketing platform, with a $1 fee, thats it. Refunds for tickets that don&apos;t work, keeping you safe from scams, and no hidden fees.
+          Bloompass is what ticketing should be. We&apos;re a ticketing
+          platform, with a $1 fee, thats it. Refunds for tickets that don&apos;t
+          work, keeping you safe from scams, and no hidden fees.
         </Title>
         <Title order={2} className={classes.description} mt='xl'>
           We&apos;re currently in beta. Sign up to get early access.

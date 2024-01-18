@@ -1,4 +1,4 @@
-import { LoaderFunction, LoaderFunctionArgs, json } from '@remix-run/node';
+import { LoaderFunction, LoaderFunctionArgs, MetaFunction, json } from '@remix-run/node';
 import { getUser } from '../session.server';
 import { getTickets, searchTicketsByQuery } from '../models/ticket.server';
 import { Form, Link, useLoaderData, useNavigate } from '@remix-run/react';
@@ -47,6 +47,8 @@ export const loader: LoaderFunction = async ({
       tickets: await (await getTickets()).json(),
     });
 };
+
+export const meta: MetaFunction = () => [{ title: 'Feed' }];
 
 export default function Feed() {
   const { tickets, hashtags, user } = useLoaderData<typeof loader>();

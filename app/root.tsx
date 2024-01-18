@@ -61,28 +61,28 @@ export function ErrorBoundary() {
         <Links />
       </head>
       <body>
-        <div className={classes.root}>
-          <Container>
-            <div className={classes.label}>500</div>
-            <Title className={classes.title}>
-              Something bad just happened...
-            </Title>
-            <Text size='lg' ta='center' className={classes.description}>
-              Our servers could not handle your request. Don&apos;t worry, our
-              development team was already notified. Try refreshing the page.
-            </Text>
-            <Group justify='center'>
-              <Button variant='white' size='md'>
-                <Link
-                  to='/feed'
-                  style={{ textDecoration: 'none'}}>
-                  Refresh the page
-                </Link>
-              </Button>
-            </Group>
-          </Container>
-        </div>
-        <Scripts />
+        <MantineProvider theme={theme}>
+          <div className={classes.root}>
+            <Container>
+              <div className={classes.label}>500</div>
+              <Title className={classes.title}>
+                Something bad just happened...
+              </Title>
+              <Text size='lg' ta='center' className={classes.description}>
+                Our servers could not handle your request. Don&apos;t worry, our
+                development team was already notified. Try refreshing the page.
+              </Text>
+              <Group justify='center'>
+                <Button variant='white' size='md'>
+                  <Link to='/feed' style={{ textDecoration: 'none' }}>
+                    Refresh the page
+                  </Link>
+                </Button>
+              </Group>
+            </Container>
+          </div>
+          <Scripts />
+        </MantineProvider>
       </body>
     </html>
   );

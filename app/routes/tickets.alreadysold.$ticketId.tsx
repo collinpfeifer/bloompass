@@ -1,6 +1,7 @@
 import {
   LoaderFunction,
   LoaderFunctionArgs,
+  MetaFunction,
   json,
   redirect,
 } from '@remix-run/node';
@@ -20,6 +21,8 @@ export const loader: LoaderFunction = async ({
   if (!ticket.sold) return redirect(`/tickets/${ticketId}`);
   return json({ ticket });
 };
+
+export const meta: MetaFunction = () => [{ title: 'Ticket already sold!' }]
 
 export default function AlreadySold() {
   const { ticket } = useLoaderData<typeof loader>();

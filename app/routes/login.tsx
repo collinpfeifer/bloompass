@@ -66,7 +66,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 };
 
-export const meta: MetaFunction = () => [{ title: 'Sign up' }];
+export const meta: MetaFunction = () => [{ title: 'Login' }];
 
 export default function Login() {
   const [searchParams] = useSearchParams();

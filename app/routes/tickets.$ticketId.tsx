@@ -1,6 +1,7 @@
 import {
   LoaderFunction,
   LoaderFunctionArgs,
+  MetaFunction,
   json,
   redirect,
 } from '@remix-run/node';
@@ -37,6 +38,10 @@ export const loader: LoaderFunction = async ({
     hashtags: allHashtags,
   });
 };
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
+  { title: data.ticket.title },
+];
 
 export default function Ticket() {
   const { user, ticket, baseUrl, hashtags } = useLoaderData<typeof loader>();

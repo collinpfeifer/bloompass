@@ -1,6 +1,9 @@
 import { Title, Text, Button, Container, Group } from '@mantine/core';
 import classes from '../styles/notfound.module.css';
 import { Link } from '@remix-run/react';
+import { MetaFunction } from '@remix-run/node';
+
+export const meta: MetaFunction = () => [{ title: 'Error!' }];
 
 export default function NotFoundTitle() {
   return (

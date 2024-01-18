@@ -1,4 +1,9 @@
-import { LoaderFunction, LoaderFunctionArgs, json } from '@remix-run/node';
+import {
+  LoaderFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+  json,
+} from '@remix-run/node';
 import { requireUser } from '../session.server';
 import { getBoughtTicketsByUserId } from '../models/ticket.server';
 import invariant from 'tiny-invariant';
@@ -18,6 +23,8 @@ export const loader: LoaderFunction = async ({
   ).json();
   return json({ user, tickets });
 };
+
+export const meta: MetaFunction = () => [{ title: 'Bought Tickets' }];
 
 export default function TicketsBought() {
   const { user, tickets } = useLoaderData<typeof loader>();
