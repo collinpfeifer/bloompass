@@ -26,7 +26,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       business_type: 'individual',
       individual: {
         email: user.email,
-      },
+      },   
       business_profile: {
         product_description: 'Ticket reseller',
         support_email: user.email,
@@ -44,7 +44,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         redirectTo ? `?redirectTo=${redirectTo}` : ''
       }`,
     });
-
     return redirect(accountLink.url);
   }
   return redirect('/feed');

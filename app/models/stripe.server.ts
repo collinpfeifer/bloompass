@@ -33,6 +33,7 @@ export async function createAccountLink({
     refresh_url: refreshUrl,
     return_url: returnUrl,
     type: 'account_onboarding',
+    collect: 'eventually_due',
   });
   return accountLink;
 }
