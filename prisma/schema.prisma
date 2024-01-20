@@ -14,6 +14,7 @@ model User {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   stripeAccountId    String?
+  balance            Float  @default(0)
   onboardingComplete Boolean  @default(false)
   boughtTickets      Ticket[] @relation("BoughtTickets")
   sellingTickets     Ticket[] @relation("SellingTickets")

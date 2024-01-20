@@ -18,6 +18,7 @@ import {
   IconPigMoney,
   IconTicket,
   IconHome,
+  IconUserCircle,
 } from '@tabler/icons-react';
 import classes from '../styles/headeruser.module.css';
 import { User } from '@prisma/client';
@@ -27,7 +28,7 @@ export default function HeaderUser({ user }: { user: User }) {
   const theme = useMantineTheme();
   const [opened, { toggle }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery('(max-width: 30em)');
 
   return (
     <div className={classes.header}>
@@ -124,6 +125,20 @@ export default function HeaderUser({ user }: { user: User }) {
                   Payment Dashboard
                 </Menu.Item>
                 </Form> */}
+                <Menu.Item
+                  leftSection={
+                    <IconUserCircle
+                      style={{ width: rem(16), height: rem(16) }}
+                      stroke={1.5}
+                    />
+                  }>
+                  <Link
+                    prefetch='render'
+                    style={{ textDecoration: 'none', color: 'black' }}
+                    to='/profile'>
+                    Profile
+                  </Link>
+                </Menu.Item>
                 <Form method='post' action='/logout'>
                   <Menu.Item
                     leftSection={

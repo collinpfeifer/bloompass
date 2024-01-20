@@ -74,18 +74,25 @@ export async function getUserById({ id }: { id: string }) {
   return json(user);
 }
 
+export async function getUsers() {
+  const users = await prisma.user.findMany();
+  return json(users);
+}
+
 export async function updateUser({
   id,
   email,
   stripeAccountId,
   onboardingComplete,
   banned,
+  balance,
 }: {
   id: string;
   email?: string;
   stripeAccountId?: string;
   onboardingComplete?: boolean;
   banned?: boolean;
+  balance?: number;
 }) {
   const user = await prisma.user.update({
     where: { id },
@@ -94,6 +101,7 @@ export async function updateUser({
       stripeAccountId,
       onboardingComplete,
       banned,
+      balance,
     },
   });
   if (!user) {

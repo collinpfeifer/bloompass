@@ -100,6 +100,7 @@ export async function getUser(request: Request) {
         stripeAccountId: true,
         onboardingComplete: true,
         banned: true,
+        balance: true,
       },
     });
     if (user?.banned) throw logout(request);

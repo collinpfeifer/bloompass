@@ -26,11 +26,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       business_type: 'individual',
       individual: {
         email: user.email,
-      },   
+      },
       business_profile: {
         product_description: 'Ticket reseller',
         support_email: user.email,
-        url: `${process.env.BASE_URL}/users/${user.id}`,
+        // url: `${process.env.BASE_URL}/users/${user.id}`,
       },
     });
     accountId = account.id;

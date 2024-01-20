@@ -2,7 +2,8 @@ import { ActionFunction, ActionFunctionArgs } from '@remix-run/node';
 import stripe from '../utils/stripe.server';
 import invariant from 'tiny-invariant';
 import { getTicket, updateTicket } from '../models/ticket.server';
-import { getUserById } from '../models/user.server';
+import { getUserById, getUsers, updateUser } from '../models/user.server';
+import { transfer } from '../models/stripe.server';
 
 export const action: ActionFunction = async ({
   request,
@@ -37,17 +38,12 @@ export const action: ActionFunction = async ({
           const sellerUser = await (
             await getUserById({ id: sellerUserId })
           ).json();
-          invariant(sellerUser, 'No seller user');
-          invariant(sellerUser.stripeAccountId, 'No seller stripe account id');
-          // const transfer = await stripe.transfers.create({
-          //   amount: Math.round(
-          //     (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100
-          //   ),
-          //   currency: 'usd',
-          //   destination: sellerUser.stripeAccountId,
-          //   transfer_group: ticket.id,
-          // });
-          // console.log(transfer);
+          if (sellerUser && !sellerUser?.stripeAccountId) {
+            await updateUser({
+              id: sellerUserId,
+              balance: sellerUser?.balance + ticket.price,
+            });
+          }
           await (
             await updateTicket({
               id: ticketId,
@@ -63,12 +59,24 @@ export const action: ActionFunction = async ({
               removedHashtags: [],
             })
           ).json();
-          // await payout({
-          //   accountId: sellerUser.stripeAccountId,
-          //   name: ticket.title,
-          // });
           console.log('💰 payment success!');
         }
+      }
+    }
+  } else if (event.type === 'balance.available') {
+    const balance = event.data.object;
+    const users = await (await getUsers()).json();
+    for (const user of users) {
+      if (
+        user?.balance > 0 &&
+        balance.available[0].amount / 100 >= user?.balance
+      ) {
+        await transfer({
+          amount: user.balance,
+          destination: user.stripeAccountId,
+          description: 'Balance transfer',
+        });
+        await updateUser({ id: user.id, balance: 0 });
       }
     }
   }

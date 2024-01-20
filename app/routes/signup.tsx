@@ -63,7 +63,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     if (!user)
       return json({ errors: { email: 'User not found', password: null } });
 
-    return await createSession({ userId: user.id, redirectTo });
+    return await createSession({
+      userId: user.id,
+      redirectTo,
+    });
   } catch (error) {
     console.log(error);
   }

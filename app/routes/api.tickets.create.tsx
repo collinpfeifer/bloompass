@@ -12,7 +12,7 @@ export const action: ActionFunction = async ({
   request,
 }: ActionFunctionArgs) => {
   const user = await requireUser(request);
-  if (!user.onboardingComplete) return redirect('/api/stripe/authorize');
+  if (!user) return redirect('/login');
   const formData = Object.fromEntries(await request.formData());
 
   const stringToJSONSchema = z.string().transform((str, ctx) => {

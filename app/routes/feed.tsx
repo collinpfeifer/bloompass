@@ -6,7 +6,7 @@ import {
 } from '@remix-run/node';
 import { getUser } from '../session.server';
 import { getTickets, searchTicketsByQuery } from '../models/ticket.server';
-import { Form, Link, useLoaderData, useNavigate } from '@remix-run/react';
+import { Form, useLoaderData, useNavigate } from '@remix-run/react';
 import {
   Box,
   Button,
@@ -139,12 +139,14 @@ export default function Feed() {
             formData.append('link', values.link);
             formData.append('hashtags', JSON.stringify(values.hashtags));
             formData.append('newHashtags', JSON.stringify(values.newHashtags));
+            console.log(formData);
             const data = await (
               await fetch('/api/tickets/create', {
                 method: 'POST',
                 body: formData,
               })
             ).json();
+            console.log('data', data);
             if (data.ticket) {
               // handlers.prepend(data.ticket);
               notifications.show({
@@ -227,20 +229,11 @@ export default function Feed() {
       <HeaderUser user={user} />
       <Box miw='70%' mih='78.5dvh'>
         <Stack>
-          {user &&
-            (user.onboardingComplete ? (
-              <Button m='auto' onClick={() => modalOpen()}>
-                Add Ticket
-              </Button>
-            ) : (
-              <Button m='auto'>
-                <Link
-                  style={{ color: ' white', textDecoration: 'none' }}
-                  to='/api/stripe/authorize'>
-                  Complete Onboarding to Add Ticket
-                </Link>
-              </Button>
-            ))}
+          {user && (
+            <Button m='auto' onClick={() => modalOpen()}>
+              Add Ticket
+            </Button>
+          )}
           <Form method='get'>
             <Group>
               <TextInput

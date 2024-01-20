@@ -33,7 +33,24 @@ export async function createAccountLink({
     refresh_url: refreshUrl,
     return_url: returnUrl,
     type: 'account_onboarding',
-    collect: 'eventually_due',
+  });
+  return accountLink;
+}
+
+export async function createUpdateAccountLink({
+  refreshUrl,
+  returnUrl,
+  account,
+}: {
+  refreshUrl: string;
+  returnUrl: string;
+  account: string;
+}) {
+  const accountLink = await stripe.accountLinks.create({
+    account,
+    refresh_url: refreshUrl,
+    return_url: returnUrl,
+    type: 'account_update',
   });
   return accountLink;
 }
@@ -65,6 +82,24 @@ export async function createAccountLink({
 //   return paymentIntent;
 // }
 
+export async function transfer({
+  amount,
+  destination,
+  description,
+}: {
+  amount: number;
+  destination: string;
+  description: string;
+}) {
+  const transfer = await stripe.transfers.create({
+    amount: amount * 100,
+    currency: 'usd',
+    destination,
+    description,
+  });
+  return transfer;
+}
+
 export async function createLoginLink(accountId: string) {
   const loginLink = await stripe.accounts.createLoginLink(accountId);
   return loginLink;
@@ -92,83 +127,146 @@ export async function createCheckoutSession({
   ).json();
   console.log('sellerUser', sellerUser);
   invariant(sellerUser, 'User not found');
-  console.log('sellerUser.stripeAccountId', sellerUser.stripeAccountId);
-  invariant(
-    sellerUser.stripeAccountId,
-    'Seller does not have a Stripe account'
-  );
-
-  return await stripe.checkout.sessions.create({
-    mode: 'payment',
-    automatic_tax: {
-      enabled: true,
-    },
-    line_items: [
-      {
-        price_data: {
-          currency: 'usd',
-          tax_behavior: 'exclusive',
-          product_data: {
-            name: ticket.title,
+  if (!sellerUser.stripeAccountId)
+    return await stripe.checkout.sessions.create({
+      mode: 'payment',
+      automatic_tax: {
+        enabled: true,
+      },
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            tax_behavior: 'exclusive',
+            product_data: {
+              name: ticket.title,
+            },
+            unit_amount: Math.round(
+              (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100
+            ),
           },
-          unit_amount: Math.round(
+          quantity: 1,
+        },
+        {
+          price_data: {
+            currency: 'usd',
+            tax_behavior: 'inclusive',
+            product_data: {
+              name: 'Stripe Fee',
+            },
+            unit_amount:
+              30 +
+              Math.round(
+                (Math.round((ticket.price + Number.EPSILON) * 100) / 100) *
+                  0.034 *
+                  100
+              ),
+          },
+          quantity: 1,
+        },
+        {
+          price_data: {
+            currency: 'usd',
+            tax_behavior: 'inclusive',
+            product_data: {
+              name: 'Bloompass Fee',
+            },
+            unit_amount: 100,
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        ticketId,
+        buyerUserId,
+        sellerUserId: ticket.sellerUserId,
+      },
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+    });
+  else
+    return await stripe.checkout.sessions.create({
+      mode: 'payment',
+      automatic_tax: {
+        enabled: true,
+      },
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            tax_behavior: 'exclusive',
+            product_data: {
+              name: ticket.title,
+            },
+            unit_amount: Math.round(
+              (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100
+            ),
+          },
+          quantity: 1,
+        },
+        {
+          price_data: {
+            currency: 'usd',
+            tax_behavior: 'inclusive',
+            product_data: {
+              name: 'Stripe Fee',
+            },
+            unit_amount:
+              30 +
+              Math.round(
+                (Math.round((ticket.price + Number.EPSILON) * 100) / 100) *
+                  0.034 *
+                  100
+              ),
+          },
+          quantity: 1,
+        },
+        {
+          price_data: {
+            currency: 'usd',
+            tax_behavior: 'inclusive',
+            product_data: {
+              name: 'Bloompass Fee',
+            },
+            unit_amount: 100,
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        ticketId,
+        buyerUserId,
+        sellerUserId: ticket.sellerUserId,
+      },
+      payment_intent_data: {
+        transfer_data: {
+          destination: sellerUser.stripeAccountId,
+          amount: Math.round(
             (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100
           ),
         },
-        quantity: 1,
+        transfer_group: ticket.id,
+        statement_descriptor: `Bloompass ${ticket.title.substring(0, 12)}`,
       },
-      {
-        price_data: {
-          currency: 'usd',
-          tax_behavior: 'inclusive',
-          product_data: {
-            name: 'Stripe Fee',
-          },
-          unit_amount:
-            30 +
-            Math.round(
-              (Math.round((ticket.price + Number.EPSILON) * 100) / 100) *
-                0.034 *
-                100
-            ),
-        },
-        quantity: 1,
-      },
-      {
-        price_data: {
-          currency: 'usd',
-          tax_behavior: 'inclusive',
-          product_data: {
-            name: 'Bloompass Fee',
-          },
-          unit_amount: 100,
-        },
-        quantity: 1,
-      },
-    ],
-    metadata: {
-      ticketId,
-      buyerUserId,
-      sellerUserId: ticket.sellerUserId,
-    },
-    payment_intent_data: {
-      transfer_data: {
-        destination: sellerUser.stripeAccountId,
-        amount: Math.round(
-          (Math.round((ticket.price + Number.EPSILON) * 100) / 100) * 100
-        ),
-      },
-      transfer_group: ticket.id,
-      statement_descriptor: `Bloompass ${ticket.title.substring(0, 12)}`,
-    },
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-  });
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+    });
 }
 
 export async function retrieveCheckoutSession(sessionId: string) {
   const session = await stripe.checkout.sessions.retrieve(sessionId);
   return session;
+}
+
+export async function retrieveBalance({
+  accountId,
+}: {
+  accountId: string | undefined;
+}) {
+  const balance = await stripe.balance.retrieve({
+    stripeAccount: accountId,
+  });
+  return balance;
 }
 
 export async function payout({
@@ -182,7 +280,6 @@ export async function payout({
     stripeAccount: accountId,
   });
 
-  console.log('balance', balance);
   const { amount, currency } = balance.available[0];
 
   const payout = await stripe.payouts.create(
