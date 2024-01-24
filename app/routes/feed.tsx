@@ -139,7 +139,6 @@ export default function Feed() {
             formData.append('link', values.link);
             formData.append('hashtags', JSON.stringify(values.hashtags));
             formData.append('newHashtags', JSON.stringify(values.newHashtags));
-            console.log(formData);
             const data = await (
               await fetch('/api/tickets/create', {
                 method: 'POST',

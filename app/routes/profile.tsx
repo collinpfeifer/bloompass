@@ -1,26 +1,27 @@
 import { LoaderFunction, LoaderFunctionArgs, json } from '@remix-run/node';
-import { getUser, requireUser } from '../session.server';
+import { requireUser } from '../session.server';
 import { Box, Button, Card, NumberFormatter, Title, Text } from '@mantine/core';
-import {
-  retrieveAccount,
-  retrieveBalance,
-  transfer,
-} from '../models/stripe.server';
+import { retrieveBalance, retrieveCharge } from '../models/stripe.server';
 import { Form, Link, useLoaderData } from '@remix-run/react';
 import HeaderUser from '../components/headeruser';
-import invariant from 'tiny-invariant';
 import { notifications } from '@mantine/notifications';
-import { updateUser } from '../models/user.server';
+import { getSellingTicketsByUserId } from '~/models/ticket.server';
 
 export const loader: LoaderFunction = async ({
   request,
 }: LoaderFunctionArgs) => {
   const user = await requireUser(request);
   if (!user.stripeAccountId) {
+    let amount = 0;
+    for (const ticket of await (
+      await getSellingTicketsByUserId({ userId: user?.id })
+    ).json()) {
+      if (ticket.sold) amount += ticket.price;
+    }
     return json({
       user,
       available: 0,
-      pending: 0,
+      pending: amount,
     });
   } else {
     const balance = await retrieveBalance({
@@ -89,12 +90,21 @@ export default function Profile() {
             </Button>
           </Form>
           {!user.onboardingComplete && (
-            <Button color='red' m='auto' my='md'>
-              <Link
-                to='/api/stripe/authorize'
-                style={{ textDecoration: 'none', color: 'white' }}>
-                Verify Stripe account before you can pay out
-              </Link>
+            <Button
+              color='red'
+              m='auto'
+              my='md'
+              maw={200}
+              mih={45}
+              component={Link}
+              to='/api/stripe/authorize'
+              style={{
+                textDecoration: 'none',
+                color: 'white',
+              }}>
+              Verify Stripe account
+              <br />
+              before you can pay out
             </Button>
           )}
           {/* {user.onboardingComplete &&

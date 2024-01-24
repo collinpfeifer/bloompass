@@ -21,25 +21,28 @@ export default function Index() {
         </Title>
         <Title order={2} className={classes.description} mt='xl'>
           Bloompass is what ticketing should be. We&apos;re a ticketing
-          platform, with a $1 fee, and Stripe fees, that&apos;s it. We offer refunds for
-          tickets that don&apos;t work, banning of scammers, and the ultimate selection of second-hand tickets.
+          platform, with a $1 fee, and Stripe fees, that&apos;s it. We offer
+          refunds for tickets that don&apos;t work, banning of scammers, and the
+          ultimate selection of second-hand tickets.
         </Title>
         <Title order={2} className={classes.description} mt='xl'>
           We&apos;re currently in beta. Sign up to get early access.
         </Title>
         <Button
           variant='outline'
-          style={{ backgroundColor: 'black' }}
+          style={{
+            backgroundColor: 'black',
+            textDecoration: 'none',
+            color: 'white',
+          }}
           size='xl'
           radius='xl'
           color='violet'
+          component={Link}
+          prefetch='intent'
+          to='/signup'
           className={classes.control}>
-          <Link
-            prefetch='intent'
-            to='/signup'
-            style={{ textDecoration: 'none', color: 'white' }}>
-            Sign up for early access
-          </Link>
+          Sign up for early access
         </Button>
       </Container>
     </div>

@@ -108,12 +108,11 @@ export default function TicketCard({
   function buttons() {
     if (!userId) {
       return (
-        <Button>
-          <Link
-            style={{ textDecoration: 'none', color: 'white' }}
-            to={`/login?redirectTo=/tickets/${id}`}>
-            Login to Buy
-          </Link>
+        <Button
+          component={Link}
+          style={{ textDecoration: 'none', color: 'white' }}
+          to={`/login?redirectTo=/tickets/${id}`}>
+          Login to Buy
         </Button>
       );
     } else if (userId && sellerUserId !== userId && !buyerUserId) {
@@ -205,17 +204,7 @@ export default function TicketCard({
           </Menu.Dropdown>
         </Menu>
       );
-    }
-    // else if (sellerUserId === userId && !buyerUserId) {
-    //   return (
-    //     <Button>
-    //       <Link style={{ textDecoration: 'none', color: 'white' }} to='/edit'>
-    //         Edit Ticket
-    //       </Link>
-    //     </Button>
-    //   );
-    // }
-    else if (buyerUserId === userId) {
+    } else if (buyerUserId === userId) {
       return <Button onClick={open}>Report and/or Refund</Button>;
     } else return null;
   }

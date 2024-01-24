@@ -37,23 +37,23 @@ export async function createAccountLink({
   return accountLink;
 }
 
-export async function createUpdateAccountLink({
-  refreshUrl,
-  returnUrl,
-  account,
-}: {
-  refreshUrl: string;
-  returnUrl: string;
-  account: string;
-}) {
-  const accountLink = await stripe.accountLinks.create({
-    account,
-    refresh_url: refreshUrl,
-    return_url: returnUrl,
-    type: 'account_update',
-  });
-  return accountLink;
-}
+// export async function createUpdateAccountLink({
+//   refreshUrl,
+//   returnUrl,
+//   account,
+// }: {
+//   refreshUrl: string;
+//   returnUrl: string;
+//   account: string;
+// }) {
+//   const accountLink = await stripe.accountLinks.create({
+//     account,
+//     refresh_url: refreshUrl,
+//     return_url: returnUrl,
+//     type: 'account_update',
+//   });
+//   return accountLink;
+// }
 
 // async function createLoginLink(accountId: string) {
 //   const loginLink = await stripe.accounts.createLoginLink(accountId);
@@ -83,15 +83,18 @@ export async function createUpdateAccountLink({
 // }
 
 export async function transfer({
+  amount,
   destination,
   description,
   chargeId,
 }: {
+  amount: number;
   destination: string;
   description: string;
   chargeId: string;
 }) {
   const transfer = await stripe.transfers.create({
+    amount,
     currency: 'usd',
     destination,
     source_transaction: chargeId,

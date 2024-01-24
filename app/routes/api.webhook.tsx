@@ -35,11 +35,11 @@ export const action: ActionFunction = async ({
       );
       const ticket = await (await getTicket({ id: ticketId })).json();
       if (ticket) {
+        invariant(
+          typeof paymentIntent.latest_charge === 'string',
+          'No latest charge'
+        );
         if (ticket.sold) {
-          invariant(
-            typeof paymentIntent.latest_charge === 'string',
-            'No latest charge'
-          );
           await createRefund({
             chargeId: paymentIntent.latest_charge,
             paymentIntentId: checkoutSession.payment_intent,
@@ -47,22 +47,6 @@ export const action: ActionFunction = async ({
           });
           console.log('💰 refund success!');
         } else {
-          const sellerUser = await (
-            await getUserById({ id: sellerUserId })
-          ).json();
-          if (sellerUser && !sellerUser?.onboardingComplete) {
-            invariant(
-              typeof paymentIntent.latest_charge === 'string',
-              'No latest charge'
-            );
-            await updateUser({
-              id: sellerUserId,
-              pendingChargeIds: [
-                ...sellerUser.pendingChargeIds,
-                paymentIntent.latest_charge,
-              ],
-            });
-          }
           await (
             await updateTicket({
               id: ticketId,
@@ -73,6 +57,7 @@ export const action: ActionFunction = async ({
               soldAt: new Date().toISOString(),
               hashtags: [],
               price: undefined,
+              chargeId: paymentIntent.latest_charge,
               dateTime: undefined,
               newHashtags: [],
               removedHashtags: [],
@@ -82,30 +67,6 @@ export const action: ActionFunction = async ({
         }
       }
     }
-    // } else if (event.type === 'balance.available') {
-    //   const balance = event.data.object;
-    //   console.log('💰 balance available!', balance);
-    //   const users = await (await getUsers()).json();
-    //   try {
-    //     for (const user of users) {
-    //       if (
-    //         user?.balance > 0 &&
-    //         balance.available[0].amount / 100 >= user?.balance &&
-    //         user.stripeAccountId
-    //       ) {
-    //         await transfer({
-    //           amount: user.balance,
-    //           destination: user.stripeAccountId,
-    //           description: 'Balance transfer',
-    //         });
-    //         await updateUser({ id: user.id, balance: 0 });
-    //       }
-    //     }
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-    // }
-
-    return {};
   }
+  return {};
 };

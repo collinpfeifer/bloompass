@@ -172,6 +172,7 @@ export async function updateTicket({
   dateTime,
   description,
   hashtags,
+  chargeId,
   buyerUserId,
   newHashtags,
   removedHashtags,
@@ -182,6 +183,7 @@ export async function updateTicket({
   title: string | undefined;
   price: number | undefined;
   dateTime: string | undefined;
+  chargeId: string | undefined;
   description: string | undefined;
   buyerUserId: string | undefined;
   hashtags: Hashtag[];
@@ -197,6 +199,7 @@ export async function updateTicket({
       description,
       price,
       dateTime,
+      chargeId,
       buyerUserId,
       hashtags: {
         disconnect: [...removedHashtags.map((hashtag) => ({ id: hashtag.id }))],

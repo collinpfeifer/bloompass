@@ -11,15 +11,15 @@ export default function HeaderSimple() {
         <Button
           radius='xl'
           size='lg'
+          component={Link}
+          prefetch='render'
+          to='/login'
           style={{
             background: 'linear-gradient(270deg, teal, purple)',
+            color: 'white',
+            textDecoration: 'none',
           }}>
-          <Link
-            prefetch='intent'
-            to='/login'
-            style={{ color: 'white', textDecoration: 'none' }}>
             <Text size='xl'>Login</Text>
-          </Link>
         </Button>
         {/* <Button
           radius='xl'

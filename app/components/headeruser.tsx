@@ -69,6 +69,10 @@ export default function HeaderUser({ user }: { user: User }) {
               </Menu.Target>
               <Menu.Dropdown>
                 <Menu.Item
+                  component={Link}
+                  prefetch='render'
+                  style={{ textDecoration: 'none', color: 'black' }}
+                  to='/feed'
                   leftSection={
                     <IconHome
                       style={{ width: rem(16), height: rem(16) }}
@@ -76,14 +80,13 @@ export default function HeaderUser({ user }: { user: User }) {
                       stroke={1.5}
                     />
                   }>
-                  <Link
-                    prefetch='render'
-                    style={{ textDecoration: 'none', color: 'black' }}
-                    to='/feed'>
-                    Feed
-                  </Link>
+                  Feed
                 </Menu.Item>
                 <Menu.Item
+                  component={Link}
+                  prefetch='render'
+                  style={{ textDecoration: 'none', color: 'black' }}
+                  to='/tickets/selling'
                   leftSection={
                     <IconPigMoney
                       style={{ width: rem(16), height: rem(16) }}
@@ -91,14 +94,13 @@ export default function HeaderUser({ user }: { user: User }) {
                       stroke={1.5}
                     />
                   }>
-                  <Link
-                    prefetch='render'
-                    style={{ textDecoration: 'none', color: 'black' }}
-                    to='/tickets/selling'>
-                    Selling Tickets
-                  </Link>
+                  Selling Tickets
                 </Menu.Item>
                 <Menu.Item
+                  component={Link}
+                  prefetch='render'
+                  style={{ textDecoration: 'none', color: 'black' }}
+                  to='/tickets/bought'
                   leftSection={
                     <IconTicket
                       style={{ width: rem(16), height: rem(16) }}
@@ -106,12 +108,7 @@ export default function HeaderUser({ user }: { user: User }) {
                       stroke={1.5}
                     />
                   }>
-                  <Link
-                    prefetch='render'
-                    style={{ textDecoration: 'none', color: 'black' }}
-                    to='/tickets/bought'>
-                    Bought Tickets
-                  </Link>
+                  Bought Tickets
                 </Menu.Item>
                 <Menu.Label>Settings</Menu.Label>
                 {/* <Form method='post' action='/api.stripe.dashboard'>
@@ -126,18 +123,17 @@ export default function HeaderUser({ user }: { user: User }) {
                 </Menu.Item>
                 </Form> */}
                 <Menu.Item
+                  component={Link}
+                  prefetch='render'
+                  style={{ textDecoration: 'none', color: 'black' }}
+                  to='/profile'
                   leftSection={
                     <IconUserCircle
                       style={{ width: rem(16), height: rem(16) }}
                       stroke={1.5}
                     />
                   }>
-                  <Link
-                    prefetch='render'
-                    style={{ textDecoration: 'none', color: 'black' }}
-                    to='/profile'>
-                    Profile
-                  </Link>
+                  Profile
                 </Menu.Item>
                 <Form method='post' action='/logout'>
                   <Menu.Item
@@ -154,13 +150,12 @@ export default function HeaderUser({ user }: { user: User }) {
               </Menu.Dropdown>
             </Menu>
           ) : (
-            <Button>
+            <Button
+              component={Link}
+              to='/login'
+              style={{ textDecoration: 'none', color: 'white' }}>
               <Text fw={500} size='sm' lh={1} mr={3}>
-                <Link
-                  to='/login'
-                  style={{ textDecoration: 'none', color: 'white' }}>
-                  Login
-                </Link>
+                Login
               </Text>
             </Button>
           )}
