@@ -1,13 +1,6 @@
 import { LoaderFunction, LoaderFunctionArgs, json } from '@remix-run/node';
-import { getUser } from '../session.server';
-import {
-  Box,
-  Button,
-  Card,
-  NumberFormatter,
-  Title,
-  Text,
-} from '@mantine/core';
+import { getUser, requireUser } from '../session.server';
+import { Box, Button, Card, NumberFormatter, Title, Text } from '@mantine/core';
 import {
   retrieveAccount,
   retrieveBalance,
@@ -22,55 +15,27 @@ import { updateUser } from '../models/user.server';
 export const loader: LoaderFunction = async ({
   request,
 }: LoaderFunctionArgs) => {
-  const user = await getUser(request);
-  const stripeAccount = await retrieveAccount(user?.stripeAccountId);
-  const rootBalance = await retrieveBalance({ accountId: undefined });
-  invariant(stripeAccount, 'Stripe account not found');
-  invariant(
-    stripeAccount?.capabilities,
-    'Stripe account capabilities not found'
-  );
-  if (
-    user?.stripeAccountId &&
-    user?.onboardingComplete &&
-    stripeAccount?.capabilities.transfers === 'active' &&
-    stripeAccount?.capabilities.card_payments === 'active'
-  ) {
-    if (
-      user?.balance > 0 &&
-      rootBalance.available[0].amount / 100 >= user.balance
-    ) {
-      await transfer({
-        amount: user.balance,
-        destination: user.stripeAccountId,
-        description: 'Balance transfer',
-      });
-      await updateUser({ id: user.id, balance: 0 });
-    }
+  const user = await requireUser(request);
+  if (!user.stripeAccountId) {
+    return json({
+      user,
+      available: 0,
+      pending: 0,
+    });
+  } else {
     const balance = await retrieveBalance({
       accountId: user?.stripeAccountId,
     });
     return json({
       user,
       available: balance.available[0].amount / 100,
-      pending: balance.pending[0].amount / 100 + user?.balance,
-      transfers: null,
-      card_payments: null,
-    });
-  } else {
-    return json({
-      user,
-      available: 0,
-      pending: user?.balance,
-      transfers: stripeAccount?.capabilities?.transfers,
-      card_payments: stripeAccount?.capabilities?.card_payments,
+      pending: balance.pending[0].amount / 100,
     });
   }
 };
 
 export default function Profile() {
-  const { user, available, pending, transfers, card_payments } =
-    useLoaderData<typeof loader>();
+  const { user, available, pending } = useLoaderData<typeof loader>();
   return (
     <>
       <HeaderUser user={user} />
@@ -85,72 +50,72 @@ export default function Profile() {
             Pending:{' '}
             <NumberFormatter prefix='$ ' value={pending} thousandSeparator />
           </Text>
-            <Form
-              onSubmit={async () => {
-                const data = await (
-                  await fetch('/api/stripe/payout', {
-                    method: 'POST',
-                  })
-                ).json();
-                if (data.error) {
-                  if (data.error.raw.code === 'parameter_invalid_integer') {
-                    notifications.show({
-                      title: 'Payout failed',
-                      message: 'Your available balance is too low to payout',
-                      color: 'red',
-                    });
-                  } else {
-                    notifications.show({
-                      title: 'Payout failed',
-                      message: data.error.raw.message,
-                      color: 'red',
-                    });
-                  }
+          <Form
+            onSubmit={async () => {
+              const data = await (
+                await fetch('/api/stripe/payout', {
+                  method: 'POST',
+                })
+              ).json();
+              if (data.error) {
+                if (data.error.raw.code === 'parameter_invalid_integer') {
+                  notifications.show({
+                    title: 'Payout failed',
+                    message: 'Your available balance has to be greater than $0',
+                    color: 'red',
+                  });
                 } else {
                   notifications.show({
-                    title: 'Payout successful',
-                    message:
-                      'Your payout was successful, and should be on its way shortly',
-                    color: 'green',
+                    title: 'Payout failed',
+                    message: data.error.raw.message,
+                    color: 'red',
                   });
                 }
-              }}>
-              <Button
-                m='auto'
-                my='lg'
-                disabled={
-                  !user.onboardingComplete ||
-                  transfers === 'inactive' ||
-                  card_payments === 'inactive'
-                }
-                type='submit'>
-                Payout
-              </Button>
-            </Form>
-            <Text size='xs'>
-              Payouts automatically occur every 2 days, and your balances will
-              be updated automatically when the payment is transfered, check
-              back regularly.
-            </Text>
+              } else {
+                notifications.show({
+                  title: 'Payout successful',
+                  message:
+                    'Your payout was successful, and should be on its way shortly',
+                  color: 'green',
+                });
+              }
+            }}>
+            <Button
+              m='auto'
+              my='lg'
+              disabled={!user.onboardingComplete || available === 0}
+              type='submit'>
+              Payout
+            </Button>
+          </Form>
           {!user.onboardingComplete && (
             <Button color='red' m='auto' my='md'>
               <Link
                 to='/api/stripe/authorize'
                 style={{ textDecoration: 'none', color: 'white' }}>
-                Verify before you can pay out
+                Verify Stripe account before you can pay out
               </Link>
             </Button>
           )}
-          {user.onboardingComplete &&
+          {/* {user.onboardingComplete &&
             (transfers === 'inactive' || card_payments === 'inactive') && (
               <Button color='red' m='auto' my='md'>
                 <Link
                   to='/api/stripe/update'
                   style={{ textDecoration: 'none', color: 'white' }}>
-                  Update before you can pay out
+                  Update Stripe account before you can pay out
                 </Link>
               </Button>
-            )}
+            )} */}
+        </Card>
+        <Card withBorder padding='xl' radius='md' my='md'>
+          <Text style={{ fontSize: '10px' }}>
+            **After your Stripe account is setup, your payment will transfered
+            when the charge clears, payouts automatically occur every 2 days,
+            your balances will be updated automatically when the payment is
+            transfered, check back regularly. Transfers can take up to 7 days
+            the first time.
+          </Text>
         </Card>
       </Box>
     </>

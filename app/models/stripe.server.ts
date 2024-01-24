@@ -83,21 +83,48 @@ export async function createUpdateAccountLink({
 // }
 
 export async function transfer({
-  amount,
   destination,
   description,
+  chargeId,
 }: {
-  amount: number;
   destination: string;
   description: string;
+  chargeId: string;
 }) {
   const transfer = await stripe.transfers.create({
-    amount: amount * 100,
     currency: 'usd',
     destination,
+    source_transaction: chargeId,
     description,
   });
   return transfer;
+}
+
+export async function retrieveCharge(chargeId: string) {
+  const charge = await stripe.charges.retrieve(chargeId);
+  return charge;
+}
+
+export async function createRefund({
+  chargeId,
+  paymentIntentId,
+  reverseTransfer,
+}: {
+  chargeId: string;
+  paymentIntentId: string;
+  reverseTransfer: boolean;
+}) {
+  const refund = await stripe.refunds.create({
+    charge: chargeId,
+    payment_intent: paymentIntentId,
+    reverse_transfer: reverseTransfer,
+  });
+  return refund;
+}
+
+export async function retrievePaymentIntent(paymentIntentId: string) {
+  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+  return paymentIntent;
 }
 
 export async function createLoginLink(accountId: string) {

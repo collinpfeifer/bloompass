@@ -416,7 +416,9 @@ export default function TicketCard({
             <Text fz='xs' c='dimmed' className={classes.label}>
               Link
             </Text>
-            <a href={link}>{link}</a>
+            <a href={link} target='_blank'>
+              {link}
+            </a>
           </Card.Section>
         )}
 
