@@ -113,8 +113,8 @@ export async function createRefund({
   paymentIntentId,
   reverseTransfer,
 }: {
-  chargeId: string;
-  paymentIntentId: string;
+  chargeId?: string;
+  paymentIntentId?: string;
   reverseTransfer: boolean;
 }) {
   const refund = await stripe.refunds.create({

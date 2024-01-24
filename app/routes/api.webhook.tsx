@@ -3,7 +3,6 @@ import stripe from '../utils/stripe.server';
 import { createRefund, retrievePaymentIntent } from '../models/stripe.server';
 import invariant from 'tiny-invariant';
 import { getTicket, updateTicket } from '../models/ticket.server';
-import { getUserById, updateUser } from '../models/user.server';
 
 export const action: ActionFunction = async ({
   request,
@@ -42,7 +41,6 @@ export const action: ActionFunction = async ({
         if (ticket.sold) {
           await createRefund({
             chargeId: paymentIntent.latest_charge,
-            paymentIntentId: checkoutSession.payment_intent,
             reverseTransfer: true,
           });
           console.log('💰 refund success!');

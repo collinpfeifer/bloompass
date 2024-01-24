@@ -65,7 +65,6 @@ export async function requireUser(
       stripeAccountId: true,
       onboardingComplete: true,
       banned: true,
-      pendingChargeIds: true,
     },
   });
   if (!user) {
@@ -101,7 +100,6 @@ export async function getUser(request: Request) {
         stripeAccountId: true,
         onboardingComplete: true,
         banned: true,
-        pendingChargeIds: true,
       },
     });
     if (user?.banned) throw logout(request);

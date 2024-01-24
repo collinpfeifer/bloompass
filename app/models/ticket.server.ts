@@ -230,6 +230,14 @@ export async function getSellingTicketsByUserId({
   return json(tickets);
 }
 
+export async function getSoldTicketsByUserId({ userId }: { userId: string }) {
+  const tickets = await prisma.ticket.findMany({
+    where: { sellerUserId: userId, sold: true },
+    include: { hashtags: true },
+  });
+  return json(tickets);
+}
+
 export async function getBoughtTicketsByUserId({ userId }: { userId: string }) {
   const tickets = await prisma.ticket.findMany({
     where: { buyerUserId: userId },

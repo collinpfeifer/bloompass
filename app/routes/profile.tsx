@@ -1,11 +1,11 @@
 import { LoaderFunction, LoaderFunctionArgs, json } from '@remix-run/node';
 import { requireUser } from '../session.server';
 import { Box, Button, Card, NumberFormatter, Title, Text } from '@mantine/core';
-import { retrieveBalance, retrieveCharge } from '../models/stripe.server';
+import { retrieveBalance } from '../models/stripe.server';
 import { Form, Link, useLoaderData } from '@remix-run/react';
 import HeaderUser from '../components/headeruser';
 import { notifications } from '@mantine/notifications';
-import { getSellingTicketsByUserId } from '~/models/ticket.server';
+import { getSoldTicketsByUserId } from '~/models/ticket.server';
 
 export const loader: LoaderFunction = async ({
   request,
@@ -14,9 +14,9 @@ export const loader: LoaderFunction = async ({
   if (!user.stripeAccountId) {
     let amount = 0;
     for (const ticket of await (
-      await getSellingTicketsByUserId({ userId: user?.id })
+      await getSoldTicketsByUserId({ userId: user?.id })
     ).json()) {
-      if (ticket.sold) amount += ticket.price;
+      amount += ticket.price;
     }
     return json({
       user,
