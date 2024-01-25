@@ -76,8 +76,16 @@ export const action: ActionFunction = async ({
     });
   }
 
-  const { id, title, description, dateTime, price, hashtags, newHashtags, removedHashtags } =
-    result.data;
+  const {
+    id,
+    title,
+    description,
+    dateTime,
+    price,
+    hashtags,
+    newHashtags,
+    removedHashtags,
+  } = result.data;
 
   const newTicket = await (
     await updateTicket({

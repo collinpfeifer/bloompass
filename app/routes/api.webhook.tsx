@@ -60,15 +60,11 @@ export const action: ActionFunction = async ({
           await (
             await updateTicket({
               id: ticketId,
-              title: undefined,
-              description: undefined,
               buyerUserId,
               sold: true,
               soldAt: new Date().toISOString(),
               hashtags: [],
-              price: undefined,
               chargeId: paymentIntent.latest_charge,
-              dateTime: undefined,
               newHashtags: [],
               removedHashtags: [],
             })

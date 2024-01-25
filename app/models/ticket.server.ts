@@ -18,7 +18,7 @@ export async function createTicket({
   price: number;
   dateTime: string;
   link: string;
-  description: string;
+  description?: string;
   hashtags: Hashtag[];
   newHashtags: Hashtag[];
 }) {
@@ -178,14 +178,14 @@ export async function updateTicket({
   removedHashtags,
 }: {
   id: string;
-  sold: boolean | undefined;
-  soldAt: string | undefined;
-  title: string | undefined;
-  price: number | undefined;
-  dateTime: string | undefined;
-  chargeId: string | undefined;
-  description: string | undefined;
-  buyerUserId: string | undefined;
+  sold?: boolean;
+  soldAt?: string;
+  title?: string;
+  price?: number;
+  dateTime?: string;
+  chargeId?: string;
+  description?: string;
+  buyerUserId?: string;
   hashtags: Hashtag[];
   newHashtags: Hashtag[];
   removedHashtags: Hashtag[];

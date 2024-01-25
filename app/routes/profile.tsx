@@ -24,7 +24,7 @@ export const loader: LoaderFunction = async ({
     for (const ticket of await (
       await getSoldTicketsByUserId({ userId: user?.id })
     ).json()) {
-      amount += ticket.price;
+      amount += Number(ticket.price);
     }
     return json({
       user,

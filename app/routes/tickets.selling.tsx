@@ -59,7 +59,7 @@ export default function TicketsSelling() {
                   title={ticket.title}
                   description={ticket.description}
                   dateTime={ticket.dateTime}
-                  price={ticket.price}
+                  price={Number(ticket.price)}
                   sold={ticket.sold}
                   link={ticket.link}
                   sellerUserId={ticket.sellerUserId}

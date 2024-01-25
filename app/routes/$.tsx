@@ -15,10 +15,12 @@ export default function NotFoundTitle() {
         address, or the page has been moved to another URL.
       </Text>
       <Group justify='center'>
-        <Button variant='subtle' size='md'>
-          <Link to='/feed' style={{ textDecoration: 'none', color: 'white' }}>
-            Take me back to home page
-          </Link>
+        <Button
+          component={Link}
+          size='md'
+          to='/feed'
+          style={{ textDecoration: 'none', color: 'white' }}>
+          Take me back to home page
         </Button>
       </Group>
     </Container>

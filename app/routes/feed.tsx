@@ -272,7 +272,7 @@ export default function Feed() {
                   dateTime={ticket.dateTime}
                   link={ticket.link}
                   sold={ticket.sold}
-                  price={ticket.price}
+                  price={Number(ticket.price)}
                   sellerUserId={ticket.sellerUserId}
                   buyerUserId={ticket.buyerUserId}
                   userId={user?.id}

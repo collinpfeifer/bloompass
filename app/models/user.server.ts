@@ -85,14 +85,12 @@ export async function updateUser({
   stripeAccountId,
   onboardingComplete,
   banned,
-  pendingChargeIds,
 }: {
   id: string;
   email?: string;
   stripeAccountId?: string;
   onboardingComplete?: boolean;
   banned?: boolean;
-  pendingChargeIds?: string[];
 }) {
   const user = await prisma.user.update({
     where: { id },
@@ -101,7 +99,6 @@ export async function updateUser({
       stripeAccountId,
       onboardingComplete,
       banned,
-      pendingChargeIds,
     },
   });
   if (!user) {
