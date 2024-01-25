@@ -278,6 +278,10 @@ export default function TicketCard({
             label='Price'
             placeholder='Price'
             name='price'
+            prefix='$'
+            decimalScale={2}
+            allowNegative={false}
+            fixedDecimalScale
             required
             {...editForm.getInputProps('price')}
             error={editForm.errors.price}
