@@ -193,6 +193,10 @@ export default function Feed() {
             label='Price'
             placeholder='Price'
             name='price'
+            prefix='$'
+            decimalScale={2}
+            allowNegative={false}
+            fixedDecimalScale
             required
             {...modalForm.getInputProps('price')}
             error={modalForm.errors.price}

@@ -19,7 +19,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         if (ticket.chargeId) {
           await transfer({
             amount: ticket.price * 100,
-            destination: ticket.sellerUserId,
+            destination: user.stripeAccountId,
             description: `Ticket sale: ${ticket.title}`,
             chargeId: ticket.chargeId,
           });

@@ -75,18 +75,33 @@ export const action: ActionFunction = async ({
   const { title, description, dateTime, price, link, hashtags, newHashtags } =
     result.data;
 
-  const newTicket = await (
-    await createTicket({
-      request,
-      title,
-      description,
-      dateTime,
-      price,
-      link,
-      hashtags,
-      newHashtags,
-    })
-  ).json();
-  // return redirect(`/tickets/${newTicket.id}`);
-  return json({ ticket: newTicket, errors: null });
+  try {
+    const newTicket = await (
+      await createTicket({
+        request,
+        title,
+        description,
+        dateTime,
+        price,
+        link,
+        hashtags,
+        newHashtags,
+      })
+    ).json();
+    // return redirect(`/tickets/${newTicket.id}`);
+    return json({ ticket: newTicket, errors: null });
+  } catch (e: any) {
+    return json({
+      ticket: null,
+      errors: {
+        title: e.message,
+        description: e.message,
+        dateTime: e.message,
+        price: e.message,
+        link: e.message,
+        hashtags: e.message,
+        newHashtags: e.message,
+      },
+    });
+  }
 };

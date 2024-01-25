@@ -27,7 +27,7 @@ model Ticket {
   dateTime    DateTime
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  price       Int
+  price       Decimal
   link        String    @unique
   sellerUserId      String
   sellerUser        User      @relation("SellingTickets", fields: [sellerUserId], references: [id])

@@ -3,6 +3,7 @@ import stripe from '../utils/stripe.server';
 import { createRefund, retrievePaymentIntent } from '../models/stripe.server';
 import invariant from 'tiny-invariant';
 import { getTicket, updateTicket } from '../models/ticket.server';
+import { getUserById } from '../models/user.server';
 
 export const action: ActionFunction = async ({
   request,
@@ -39,11 +40,22 @@ export const action: ActionFunction = async ({
           'No latest charge'
         );
         if (ticket.sold) {
-          await createRefund({
-            chargeId: paymentIntent.latest_charge,
-            reverseTransfer: true,
-          });
-          console.log('💰 refund success!');
+          const sellerUser = await (
+            await getUserById({ id: sellerUserId })
+          ).json();
+          if (sellerUser) {
+            await createRefund({
+              chargeId: paymentIntent.latest_charge,
+              reverseTransfer: sellerUser.onboardingComplete,
+            });
+            console.log('💰 refund success!');
+          } else {
+            await createRefund({
+              chargeId: paymentIntent.latest_charge,
+              reverseTransfer: false,
+            });
+            console.log('💰 refund possible success!');
+          }
         } else {
           await (
             await updateTicket({

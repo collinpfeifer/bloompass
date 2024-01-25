@@ -1,6 +1,14 @@
 import { LoaderFunction, LoaderFunctionArgs, json } from '@remix-run/node';
 import { requireUser } from '../session.server';
-import { Box, Button, Card, NumberFormatter, Title, Text } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Card,
+  NumberFormatter,
+  Title,
+  Text,
+  Stack,
+} from '@mantine/core';
 import { retrieveBalance } from '../models/stripe.server';
 import { Form, Link, useLoaderData } from '@remix-run/react';
 import HeaderUser from '../components/headeruser';
@@ -40,7 +48,7 @@ export default function Profile() {
   return (
     <>
       <HeaderUser user={user} />
-      <Box mih='78.5dvh' maw={350}>
+      <Stack mih='78.5dvh' maw={400}>
         <Card withBorder padding='xl' radius='md'>
           <Title>{user.email}</Title>
           <Text c='black' fw='bold'>
@@ -92,19 +100,14 @@ export default function Profile() {
           {!user.onboardingComplete && (
             <Button
               color='red'
-              m='auto'
               my='md'
-              maw={200}
-              mih={45}
               component={Link}
               to='/api/stripe/authorize'
               style={{
                 textDecoration: 'none',
                 color: 'white',
               }}>
-              Verify Stripe account
-              <br />
-              before you can pay out
+              Verify Stripe account before you can payout
             </Button>
           )}
           {/* {user.onboardingComplete &&
@@ -127,7 +130,7 @@ export default function Profile() {
             the first time.
           </Text>
         </Card>
-      </Box>
+      </Stack>
     </>
   );
 }
