@@ -1,14 +1,7 @@
 import { json } from '@remix-run/node';
 import prisma from '../utils/prisma.server';
-import { requireUserId } from '../session.server';
 
-export async function createHashtag({
-  request,
-  title,
-}: {
-  request: Request;
-  title: string;
-}) {
+export async function createHashtag({ title }: { title: string }) {
   const hashtag = await prisma.hashtag.create({
     data: {
       title,
