@@ -48,7 +48,7 @@ export default function Profile() {
   return (
     <>
       <HeaderUser user={user} />
-      <Stack mih='78.5dvh' miw={390} maw='25dvw'>
+      <Stack mih='78.5dvh' miw={390} maw='29dvw'>
         <Card withBorder padding='xl' radius='md'>
           <Text>{user.email}</Text>
           <Text c='black' fw='bold'>
