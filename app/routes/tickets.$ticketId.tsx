@@ -68,7 +68,7 @@ export default function Ticket() {
         {user && user.id === ticket.sellerUserId && (
           <>
             <Text fw='bold' c='white'>
-              Share your Ticket to Sell Faster! 🏃🥳
+              Share your Ticket on Socials to Sell Faster! 🏃🥳
             </Text>
             <Flex
               bg='gray'

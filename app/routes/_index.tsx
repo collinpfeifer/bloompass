@@ -20,13 +20,13 @@ export default function Index() {
           Resell your tickets to other true fans.
         </Title>
         <Title order={2} className={classes.description} mt='xl'>
-          Bloompass is what ticketing should be. We&apos;re a ticketing
-          platform, with a $1 fee, and Stripe fees, that&apos;s it. We offer
-          refunds for tickets that don&apos;t work, banning of scammers, and the
+          Bloompass is what ticketing should be. We&apos;re a secure ticketing
+          platform, with minimal fees. We offer
+          refunds for tickets that don&apos;t work, banning scammers, and the
           ultimate selection of second-hand tickets.
         </Title>
         <Title order={2} className={classes.description} mt='xl'>
-          We&apos;re currently in beta. Sign up to get early access.
+          No more waiting for Venmo or your ticket to come through. We&apos;re currently in beta. Sign up to get early access.
         </Title>
         <Button
           variant='outline'
