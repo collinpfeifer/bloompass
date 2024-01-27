@@ -48,9 +48,9 @@ export default function Profile() {
   return (
     <>
       <HeaderUser user={user} />
-      <Stack mih='78.5dvh' maw={400}>
+      <Stack mih='78.5dvh' miw={390} maw='25dvw'>
         <Card withBorder padding='xl' radius='md'>
-          <Title>{user.email}</Title>
+          <Text>{user.email}</Text>
           <Text c='black' fw='bold'>
             Balance:{' '}
             <NumberFormatter prefix='$ ' value={available} thousandSeparator />
@@ -101,6 +101,7 @@ export default function Profile() {
             <Button
               color='red'
               my='md'
+              m='auto'
               component={Link}
               to='/api/stripe/authorize'
               style={{
