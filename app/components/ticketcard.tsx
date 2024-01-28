@@ -99,7 +99,7 @@ export default function TicketCard({
         return false;
       },
       description: (val) => {
-        if (val.length > 500)
+        if (val && val.length > 500)
           return 'Description must be less than 500 characters';
         return false;
       },
@@ -404,14 +404,11 @@ export default function TicketCard({
           </div>
           <Stack>
             <Badge variant='outline'>{`${dayOfWeek} ${month} ${day}, ${year} ${time} `}</Badge>
-            {sold && sellerUserId === userId && (
-              <Badge color='green'>Sold</Badge>
+            {sold && (
+              <Badge color='red'>Sold</Badge>
             )}
             {sellerUserId === userId && !sold && (
               <Badge color='blue'>Selling</Badge>
-            )}
-            {sold && buyerUserId === userId && (
-              <Badge color='red'>Bought</Badge>
             )}
           </Stack>
         </Group>

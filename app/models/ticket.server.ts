@@ -50,8 +50,8 @@ export async function getTicket({ id }: { id: string }) {
 
 export async function getTickets() {
   const tickets = await prisma.ticket.findMany({
-    where: {
-      buyerUserId: null,
+    orderBy: {
+      dateTime: 'desc',
     },
     include: { hashtags: true },
   });
@@ -64,7 +64,6 @@ export async function searchTicketsByQuery({ query }: { query: string }) {
       dateTime: 'desc',
     },
     where: {
-      buyerUserId: null,
       OR: [
         {
           title: {
@@ -89,6 +88,65 @@ export async function searchTicketsByQuery({ query }: { query: string }) {
           },
         },
       ],
+    },
+    include: { hashtags: true },
+  });
+  return json(tickets);
+}
+
+export async function searchTicketsByQueryAndNotSold({
+  query,
+  notSold,
+}: {
+  query: string;
+  notSold: boolean;
+}) {
+  const tickets = await prisma.ticket.findMany({
+    orderBy: {
+      dateTime: 'desc',
+    },
+    where: {
+      sold: notSold ? false : undefined,
+      OR: [
+        {
+          title: {
+            contains: query,
+            mode: 'insensitive',
+          },
+        },
+        {
+          description: {
+            contains: query,
+            mode: 'insensitive',
+          },
+        },
+        {
+          hashtags: {
+            some: {
+              title: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          },
+        },
+      ],
+    },
+    include: { hashtags: true },
+  });
+  return json(tickets);
+}
+export async function searchTicketsByNotSold({
+  notSold,
+}: {
+  notSold: boolean;
+}) {
+  const tickets = await prisma.ticket.findMany({
+    orderBy: {
+      dateTime: 'desc',
+    },
+    where: {
+      sold: notSold ? false : undefined,
     },
     include: { hashtags: true },
   });

@@ -5,8 +5,13 @@ import {
   json,
 } from '@remix-run/node';
 import { getUser } from '../session.server';
-import { getTickets, searchTicketsByQuery } from '../models/ticket.server';
-import { Form, useLoaderData, useNavigate } from '@remix-run/react';
+import {
+  getTickets,
+  searchTicketsByNotSold,
+  searchTicketsByQuery,
+  searchTicketsByQueryAndNotSold,
+} from '../models/ticket.server';
+import { Form, Link, useLoaderData, useNavigate } from '@remix-run/react';
 import {
   Box,
   Button,
@@ -16,6 +21,7 @@ import {
   Stack,
   TextInput,
   Text,
+  Checkbox,
 } from '@mantine/core';
 import { getHashtags } from '../models/hashtag.server';
 import type { Hashtag, Ticket } from '@prisma/client';
@@ -35,15 +41,41 @@ export const loader: LoaderFunction = async ({
 }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const q = url.searchParams.get('query');
-  const querySchema = z.string().min(1).max(500).nullable();
+  const nS = Boolean(url.searchParams.get('notSold'));
+  const querySchema = z
+    .string()
+    .transform((val) => {
+      if (val.length > 0) return val.trim();
+      else return null;
+    })
+    .nullable();
+  const notSoldSchema = z.boolean().nullable();
   const query = querySchema.parse(q);
+  console.log('query', query);
+  const notSold = notSoldSchema.parse(nS);
   const user = await getUser(request);
   const allHashtags = await (await getHashtags()).json();
-  if (query)
+  if (query && notSold)
+    return json({
+      hashtags: allHashtags,
+      user,
+      tickets: await (
+        await searchTicketsByQueryAndNotSold({ query, notSold })
+      ).json(),
+      baseUrl: process.env.BASE_URL,
+    });
+  else if (query)
     return json({
       hashtags: allHashtags,
       user,
       tickets: await (await searchTicketsByQuery({ query })).json(),
+      baseUrl: process.env.BASE_URL,
+    });
+  else if (notSold)
+    return json({
+      hashtags: allHashtags,
+      user,
+      tickets: await (await searchTicketsByNotSold({ notSold })).json(),
       baseUrl: process.env.BASE_URL,
     });
   else
@@ -64,10 +96,12 @@ export default function Feed() {
     validateInputOnChange: true,
     initialValues: {
       query: '',
+      notSold: false,
     },
     validate: {
       query: (val) => {
-        if (val.length < 1) return 'Search query must be at least 1 character';
+        if (val && val.length < 1)
+          return 'Search query must be at least 1 character';
         if (val.length > 500)
           return 'Search query must be less than 500 characters';
         return false;
@@ -234,9 +268,17 @@ export default function Feed() {
       <HeaderUser user={user} />
       <Box miw='70%' mih='78.5dvh'>
         <Stack>
-          {user && (
+          {user ? (
             <Button m='auto' onClick={() => modalOpen()}>
               Add Ticket
+            </Button>
+          ) : (
+            <Button
+              component={Link}
+              to='/login'
+              prefetch='render'
+              style={{ textDecoration: 'none', color: 'black' }}>
+              Login to Add Ticket
             </Button>
           )}
           <Form method='get'>
@@ -249,7 +291,16 @@ export default function Feed() {
                 {...form.getInputProps('query')}
               />
               <Group m='auto'>
-                <Button disabled={form.values.query.length < 2} type='submit'>
+                <Checkbox
+                  name='notSold'
+                  label='Not Sold'
+                  {...form.getInputProps('notSold')}
+                />
+                <Button
+                  disabled={
+                    form.values.query.length < 2 && !form.values.notSold
+                  }
+                  type='submit'>
                   Search
                 </Button>
                 <Button
