@@ -239,7 +239,7 @@ export default function Feed() {
           />
           <TextInput
             label='Link'
-            placeholder='Link'
+            placeholder='Link cannot be changed after ticket creation'
             name='link'
             required
             {...modalForm.getInputProps('link')}
