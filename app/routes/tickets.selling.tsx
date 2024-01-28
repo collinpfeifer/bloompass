@@ -23,13 +23,18 @@ export const loader: LoaderFunction = async ({
     await getSellingTicketsByUserId({ userId: user?.id })
   ).json();
   const allHashtags = await (await getHashtags()).json();
-  return json({ user, tickets, hashtags: allHashtags });
+  return json({
+    user,
+    tickets,
+    hashtags: allHashtags,
+    baseUrl: process.env.BASE_URL,
+  });
 };
 
 export const meta: MetaFunction = () => [{ title: 'Selling/Sold Tickets' }];
 
 export default function TicketsSelling() {
-  const { user, tickets, hashtags } = useLoaderData<typeof loader>();
+  const { user, tickets, hashtags, baseUrl } = useLoaderData<typeof loader>();
   return (
     <>
       <HeaderUser user={user} />
@@ -65,6 +70,7 @@ export default function TicketsSelling() {
                   sellerUserId={ticket.sellerUserId}
                   buyerUserId={ticket.buyerUserId}
                   userId={user?.id}
+                  baseUrl={baseUrl}
                   hashtags={ticket.hashtags}
                   allHashtags={hashtags}
                 />

@@ -13,6 +13,10 @@ import {
   Menu,
   NumberInput,
   TextInput,
+  ActionIcon,
+  CopyButton,
+  Flex,
+  Tooltip,
 } from '@mantine/core';
 import classes from '../styles/ticket.module.css';
 import { Hashtag } from '@prisma/client';
@@ -20,7 +24,13 @@ import { convertDateString } from '../utils/convertDateString';
 import { Form, Link, useNavigate, useLocation } from '@remix-run/react';
 import { useDisclosure } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
-import { IconEdit, IconSettings, IconTrash } from '@tabler/icons-react';
+import {
+  IconCheck,
+  IconCopy,
+  IconEdit,
+  IconSettings,
+  IconTrash,
+} from '@tabler/icons-react';
 import { DateTimePicker } from '@mantine/dates';
 import _ from 'lodash';
 import HashtagInput from './hashtaginput';
@@ -39,6 +49,7 @@ export default function TicketCard({
   link,
   userId,
   hashtags,
+  baseUrl,
   allHashtags,
 }: {
   id: string;
@@ -50,6 +61,7 @@ export default function TicketCard({
   userId: string | null | undefined;
   link: string;
   sold: boolean;
+  baseUrl: string;
   buyerUserId: string | null | undefined;
   hashtags: Hashtag[] | null | undefined;
   allHashtags?: Hashtag[];
@@ -407,11 +419,45 @@ export default function TicketCard({
         {(buyerUserId === userId || sellerUserId === userId) && (
           <Card.Section className={classes.section} mt='md'>
             <Text fz='xs' c='dimmed' className={classes.label}>
-              Link
+              Ticket Link
             </Text>
             <a href={link} target='_blank'>
               {link}
             </a>
+          </Card.Section>
+        )}
+        {sellerUserId === userId && baseUrl && (
+          <Card.Section className={classes.section}>
+            <Text fz='xs' c='dimmed' className={classes.label}>
+              Share Link
+            </Text>
+            <Flex
+              bg='gray'
+              wrap='nowrap'
+              m={1}
+              p={2}
+              justify='space-between'
+              maw={350}>
+              <Text c='white ' m={3} lineClamp={1}>
+                {`${baseUrl}/tickets/${id}`}
+              </Text>
+              <CopyButton value={`${baseUrl}/tickets/${id}`} timeout={2000}>
+                {({ copied, copy }) => (
+                  <Tooltip
+                    label={copied ? 'Copied' : 'Copy'}
+                    withArrow
+                    position='right'>
+                    <ActionIcon color={copied ? 'teal' : 'gray'} onClick={copy}>
+                      {copied ? (
+                        <IconCheck size='1rem' />
+                      ) : (
+                        <IconCopy size='1rem' />
+                      )}
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+              </CopyButton>
+            </Flex>
           </Card.Section>
         )}
 

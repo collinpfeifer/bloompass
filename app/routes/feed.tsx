@@ -44,19 +44,21 @@ export const loader: LoaderFunction = async ({
       hashtags: allHashtags,
       user,
       tickets: await (await searchTicketsByQuery({ query })).json(),
+      baseUrl: process.env.BASE_URL,
     });
   else
     return json({
       user,
       hashtags: allHashtags,
       tickets: await (await getTickets()).json(),
+      baseUrl: process.env.BASE_URL,
     });
 };
 
 export const meta: MetaFunction = () => [{ title: 'Feed' }];
 
 export default function Feed() {
-  const { tickets, hashtags, user } = useLoaderData<typeof loader>();
+  const { tickets, hashtags, user, baseUrl } = useLoaderData<typeof loader>();
 
   const form = useForm({
     validateInputOnChange: true,
@@ -276,6 +278,7 @@ export default function Feed() {
                   sellerUserId={ticket.sellerUserId}
                   buyerUserId={ticket.buyerUserId}
                   userId={user?.id}
+                  baseUrl={baseUrl}
                   hashtags={ticket.hashtags}
                   allHashtags={hashtags}
                 />

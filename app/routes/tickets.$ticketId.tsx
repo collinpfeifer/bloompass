@@ -26,9 +26,7 @@ export const loader: LoaderFunction = async ({
   params,
 }: LoaderFunctionArgs) => {
   const user = await getUser(request);
-  console.log(user);
   const id = params.ticketId;
-  console.log(id);
   if (!id) return redirect('/feed');
   const ticket = await (await getTicket({ id })).json();
   const allHashtags = await (await getHashtags()).json();
@@ -49,7 +47,7 @@ export default function Ticket() {
   return (
     <>
       <HeaderUser user={user} />
-      <Box mih='78.5dvh' maw={350}>
+      <Box mih='78.5dvh' maw={380}>
         <TicketCard
           key={ticket.id}
           id={ticket.id}
@@ -62,6 +60,7 @@ export default function Ticket() {
           sellerUserId={ticket.sellerUserId}
           buyerUserId={ticket.buyerUserId}
           userId={user?.id}
+          baseUrl={baseUrl}
           hashtags={ticket.hashtags}
           allHashtags={hashtags}
         />
