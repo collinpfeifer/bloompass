@@ -157,7 +157,7 @@ export async function createCheckoutSession({
   ).json();
   console.log('sellerUser', sellerUser);
   invariant(sellerUser, 'User not found');
-  if (!sellerUser.stripeAccountId && !sellerUser.onboardingComplete)
+  if (!sellerUser.stripeAccountId || !sellerUser.onboardingComplete)
     return await stripe.checkout.sessions.create({
       mode: 'payment',
       automatic_tax: {
