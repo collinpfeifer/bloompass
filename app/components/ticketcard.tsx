@@ -404,9 +404,7 @@ export default function TicketCard({
           </div>
           <Stack>
             <Badge variant='outline'>{`${dayOfWeek} ${month} ${day}, ${year} ${time} `}</Badge>
-            {sold && (
-              <Badge color='red'>Sold</Badge>
-            )}
+            {sold && <Badge color='red'>Sold</Badge>}
             {sellerUserId === userId && !sold && (
               <Badge color='blue'>Selling</Badge>
             )}
@@ -418,9 +416,11 @@ export default function TicketCard({
             <Text fz='xs' c='dimmed' className={classes.label}>
               Ticket Link
             </Text>
-            <a href={link} target='_blank'>
-              {link}
-            </a>
+            <Flex maw={350}>
+              <a href={link} target='_blank'>
+                {link}
+              </a>
+            </Flex>
           </Card.Section>
         )}
         {sellerUserId === userId && baseUrl && (
