@@ -17,13 +17,13 @@ export default function Index() {
       />
       <Container className={classes.container}>
         <Title order={1} className={classes.title}>
-          Resell your tickets to other true fans.
+          Resell your student tickets to other true fans.
         </Title>
         <Title order={2} className={classes.description} mt='xl'>
           Bloompass is what ticketing should be. We&apos;re a secure ticketing
           platform, with minimal fees. We offer
           refunds for tickets that don&apos;t work, banning scammers, and the
-          ultimate selection of second-hand tickets.
+          ultimate selection of second-hand student tickets.
         </Title>
         <Title order={2} className={classes.description} mt='xl'>
           No more waiting for Venmo or your ticket to come through. We&apos;re currently in beta. Sign up to get early access.
