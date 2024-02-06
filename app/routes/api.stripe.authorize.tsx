@@ -15,22 +15,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       country: 'US',
       default_currency: 'usd',
       email: user.email,
-      // capabilities: {
-      //   card_payments: {
-      //     requested: true,
-      //   },
-      //   transfers: {
-      //     requested: true,
-      //   },
-      // },
       business_type: 'individual',
       individual: {
         email: user.email,
-      },
-      business_profile: {
-        product_description: 'Ticket reseller',
-        support_email: user.email,
-        // url: `${process.env.BASE_URL}/users/${user.id}`,
       },
     });
     accountId = account.id;
