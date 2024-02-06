@@ -19,7 +19,7 @@ export const loader: LoaderFunction = async ({
   request,
 }: LoaderFunctionArgs) => {
   const user = await requireUser(request);
-  if (!user.stripeAccountId) {
+  if (!user.stripeAccountId || !user.onboardingComplete) {
     let amount = 0;
     for (const ticket of await (
       await getSoldTicketsByUserId({ userId: user?.id })
