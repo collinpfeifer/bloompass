@@ -7,6 +7,7 @@ import {
   Stack,
   TextInput,
   Text,
+  PasswordInput,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import type {
@@ -17,7 +18,7 @@ import type {
 import { json, redirect } from '@remix-run/node';
 import { Form, Link, useActionData, useSearchParams } from '@remix-run/react';
 import { z } from 'zod';
-import { PasswordStrength } from '../components/passwordstrength';
+// import { PasswordStrength } from '../components/passwordstrength';
 import { signUp } from '../models/user.server';
 import { createSession, getUser } from '../session.server';
 import { useForm } from '@mantine/form';
@@ -80,14 +81,12 @@ export default function SignUp() {
   const redirectTo = searchParams.get('redirectTo');
   const data = useActionData<typeof action>();
   const isDesktop = useMediaQuery('(min-width: 64em)');
-  console.log(data);
   const form = useForm({
     validateInputOnChange: true,
     initialValues: {
       email: '',
       password: '',
-      redirectTo,
-      terms: false,
+      // terms: false,
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
@@ -115,9 +114,9 @@ export default function SignUp() {
         errors.password =
           'Password must only contain letters, numbers, and special characters';
       }
-      if (!values.terms) {
-        errors.terms = 'You must accept terms and conditions';
-      }
+      // if (!values.terms) {
+      //   errors.terms = 'You must accept terms and conditions';
+      // }
 
       return errors;
     },
@@ -147,18 +146,30 @@ export default function SignUp() {
               <input type='hidden' name='redirectTo' value={redirectTo} />
             )}
 
-            <PasswordStrength
+            {/* <PasswordStrength
+              {...form.getInputProps('password')}
+              error={data?.errors?.password || form.errors.password}
+            /> */}
+
+            <PasswordInput
+              label='Password'
+              name='password'
+              required
+              size={isDesktop ? 'md' : 'xl'}
+              withAsterisk
+              placeholder='Your password'
+              radius='md'
               {...form.getInputProps('password')}
               error={data?.errors?.password || form.errors.password}
             />
 
-            <Checkbox
+            {/* <Checkbox
               label='I accept terms and conditions'
               size={isDesktop ? 'md' : 'xl'}
               name='terms'
               {...form.getInputProps('terms', { type: 'checkbox' })}
               error={form.errors.terms}
-            />
+            /> */}
           </Stack>
 
           <Group justify='apart' mt='xl'>
@@ -176,7 +187,8 @@ export default function SignUp() {
               type='submit'
               radius='xl'
               style={{ background: 'green' }}
-              disabled={!form.values.terms}>
+              // disabled={!form.values.terms}
+            >
               <Text className='text-xl md:text-xl lg:text-lg'>Sign Up</Text>
             </Button>
           </Group>

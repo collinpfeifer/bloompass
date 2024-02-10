@@ -3,6 +3,7 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   json,
+  redirect,
 } from '@remix-run/node';
 import { getUser } from '../session.server';
 import {
@@ -42,6 +43,7 @@ export const loader: LoaderFunction = async ({
   const url = new URL(request.url);
   const q = url.searchParams.get('query');
   const nS = Boolean(url.searchParams.get('notSold'));
+  const redirectTo = url.searchParams.get('redirectTo');
   const querySchema = z
     .string()
     .transform((val) => {
@@ -51,9 +53,11 @@ export const loader: LoaderFunction = async ({
     .nullable();
   const notSoldSchema = z.boolean().nullable();
   const query = querySchema.parse(q);
-  console.log('query', query);
   const notSold = notSoldSchema.parse(nS);
   const user = await getUser(request);
+  if (redirectTo) {
+    return redirect(redirectTo);
+  }
   const allHashtags = await (await getHashtags()).json();
   if (query && notSold)
     return json({
@@ -277,6 +281,7 @@ export default function Feed() {
               component={Link}
               to='/login'
               prefetch='render'
+              m='auto'
               style={{ textDecoration: 'none', color: 'black' }}>
               Login to Add Ticket
             </Button>
