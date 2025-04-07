@@ -1,0 +1,1 @@
+# amethyst-post-microservice-template

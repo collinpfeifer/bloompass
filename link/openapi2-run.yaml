@@ -1,0 +1,241 @@
+swagger: '2.0'
+info:
+  title: adfluent-link-api
+  description: Link API
+  version: 1.0.0
+schemes:
+  - https
+produces:
+  - application/json
+x-google-backend:
+  address: 'https://adfluent-link-service-y5vytibjqq-uc.a.run.app'
+securityDefinitions:
+  Secured:
+    authorizationUrl: ''
+    flow: 'implicit'
+    type: 'oauth2'
+    # The value below should be unique
+    x-google-issuer: 'adfluent-api-gateway-auth@adfluent.iam.gserviceaccount.com'
+    x-google-jwks_uri: 'https://www.googleapis.com/service_accounts/v1/jwk/adfluent-api-gateway-auth@adfluent.iam.gserviceaccount.com'
+    # Optional. Replace YOUR-CLIENT-ID with your client ID
+    x-google-audiences: '102839281963594688405'
+paths:
+  /links/{id}:
+    delete:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      security:
+        - Secured: []
+      operationId: deleteLink
+      responses:
+        '200':
+          description: Successful delete user
+          schema:
+            $ref: '#/definitions/GetLink'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+    patch:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/CreateLink'
+      security:
+        - Secured: []
+      operationId: updateLink
+      responses:
+        '201':
+          description: Successful Update user
+          schema:
+            $ref: '#/definitions/GetLink'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+    get:
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: get user
+          required: true
+          type: string
+      operationId: getLink
+      responses:
+        '200':
+          description: Successful delete user
+          schema:
+            $ref: '#/definitions/GetLink'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+  /links:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      security:
+        - Secured: []
+      operationId: createLink
+      responses:
+        '201':
+          description: Successful create link
+          schema:
+            $ref: '#/definitions/CreateLink'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      security:
+        - Secured: []
+      operationId: getLinks
+      responses:
+        '200':
+          description: Successful create link
+          schema:
+            $ref: '#/definitions/GetLinks'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+  /links/{id}/click:
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      security:
+        - Secured: []
+      operationId: link click
+      responses:
+        '200':
+          description: Successful create link
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+  /links/{id}/sale:
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      security:
+        - Secured: []
+      operationId: link sale
+      responses:
+        '200':
+          description: Successful add sale to link
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+  /links/posts/{id}:
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      security:
+        - Secured: []
+      operationId: links for a post
+      responses:
+        '200':
+          description: Successful add sale to link
+          schema:
+            $ref: '#/definitions/GetLinks'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+definitions:
+  CreateLink:
+    properties:
+      userId:
+        type: string
+      postId:
+        type: string
+      userStripeAccountId:
+        type: string
+  GetLink:
+    type: object
+    properties:
+      id:
+        type: string
+      linkNumber:
+        type: string
+      createdAt:
+        type: string
+      updatedAt:
+        type: string
+      clicks:
+        type: string
+      sales:
+        type: string
+      postId:
+        type: string
+      userId:
+        type: string
+      userStripeAccountId:
+        type: string
+  GetLinks:
+    type: array
+    items:
+      $ref: '#/definitions/GetLink'
+  Model2:
+    properties:
+      statusCode:
+        type: integer
+        format: int32
+      message:
+        type: string
+      error:
+        type: string
+  Model6:
+    properties:
+      statusCode:
+        type: integer
+        format: int32
+      message:
+        type: string

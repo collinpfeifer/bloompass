@@ -1,0 +1,242 @@
+swagger: '2.0'
+info:
+  title: adfluent-pass-api
+  description: Pass API
+  version: 1.0.0
+schemes:
+  - https
+produces:
+  - application/json
+x-google-backend:
+  address: 'https://adfluent-pass-service-y5vytibjqq-uc.a.run.app'
+securityDefinitions:
+  Secured:
+    authorizationUrl: ''
+    flow: 'implicit'
+    type: 'oauth2'
+    # The value below should be unique
+    x-google-issuer: 'adfluent-api-gateway-auth@adfluent.iam.gserviceaccount.com'
+    x-google-jwks_uri: 'https://www.googleapis.com/service_accounts/v1/jwk/adfluent-api-gateway-auth@adfluent.iam.gserviceaccount.com'
+    # Optional. Replace YOUR-CLIENT-ID with your client ID
+    x-google-audiences: '102839281963594688405'
+paths:
+  /passes/{id}:
+    delete:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      security:
+        - Secured: []
+      operationId: deletePass
+      responses:
+        '200':
+          description: Successful delete user
+          schema:
+            $ref: '#/definitions/GetPass'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+    patch:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/CreatePass'
+      security:
+        - Secured: []
+      operationId: updatePass
+      responses:
+        '201':
+          description: Successful Update user
+          schema:
+            $ref: '#/definitions/GetPass'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+    get:
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: get user
+          required: true
+          type: string
+      operationId: getPass
+      responses:
+        '200':
+          description: Successful delete user
+          schema:
+            $ref: '#/definitions/GetPass'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+  /passes:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      security:
+        - Secured: []
+      operationId: createPass
+      responses:
+        '201':
+          description: Successful create pass
+          schema:
+            $ref: '#/definitions/CreatePass'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      security:
+        - Secured: []
+      operationId: getPasses
+      responses:
+        '200':
+          description: Successful create pass
+          schema:
+            $ref: '#/definitions/GetPasses'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+  /scan/{post_id}:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      security:
+        - Secured: []
+      operationId: scan Pass
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          type: string
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/ScanPass'
+      responses:
+        '201':
+          description: Successful scan pass
+          schema:
+            $ref: '#/definitions/ScanPassResponse'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+  /pkpasses/{post_id}:
+    get:
+      produces:
+        - application/vnd.apple.pkpasses
+      parameters:
+        - name: post_id
+          in: path
+          description: get pass
+          required: true
+          type: string
+      operationId: getPkPass
+      responses:
+        '200':
+          description: Successful get pkpass
+          schema:
+            $ref: '#/definitions/GetPass'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+definitions:
+  CreatePass:
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      date_time:
+        type: string
+      address:
+        type: string
+      price:
+        type: string
+      post_id:
+        type: string
+      image:
+        type: string
+  ScanPass:
+    properties:
+      data:
+        type: string
+  ScanPassResponse:
+    properties:
+      status:
+        type: string
+      detail:
+        type: string
+  GetPass:
+    type: object
+    properties:
+      id:
+        type: string
+      passNumber:
+        type: string
+      createdAt:
+        type: string
+      updatedAt:
+        type: string
+      clicks:
+        type: string
+      sales:
+        type: string
+      postId:
+        type: string
+      userId:
+        type: string
+      userStripeAccountId:
+        type: string
+  GetPasses:
+    type: array
+    items:
+      $ref: '#/definitions/GetPass'
+  Model2:
+    properties:
+      statusCode:
+        type: integer
+        format: int32
+      message:
+        type: string
+      error:
+        type: string
+  Model6:
+    properties:
+      statusCode:
+        type: integer
+        format: int32
+      message:
+        type: string

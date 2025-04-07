@@ -1,0 +1,140 @@
+swagger: '2.0'
+info:
+  title: adfluent-post-service
+  version: 1.0.0
+schemes:
+  - https
+produces:
+  - application/json
+x-google-backend:
+  address: 'https://adfluent-post-service-y5vytibjqq-uc.a.run.app'
+securityDefinitions:
+  Secured:
+    authorizationUrl: ''
+    flow: 'implicit'
+    type: 'oauth2'
+    # The value below should be unique
+    x-google-issuer: 'adfluent-api-gateway-auth@adfluent.iam.gserviceaccount.com'
+    x-google-jwks_uri: 'https://www.googleapis.com/service_accounts/v1/jwk/adfluent-api-gateway-auth@adfluent.iam.gserviceaccount.com'
+    # Optional. Replace YOUR-CLIENT-ID with your client ID
+    x-google-audiences: '102839281963594688405'
+paths:
+  /posts/{post_id}:
+    get:
+      produces:
+        - application/json
+      operationId: get_post_posts__post_id__get
+      parameters:
+        - name: post_id
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Successful Response
+          schema:
+            $ref: '#/definitions/CreatePost'
+        '422':
+          description: Validation Error
+          schema:
+            $ref: '#/definitions/HTTPValidationError'
+    delete:
+      produces:
+        - application/json
+      operationId: delete_post_posts__post_id__delete
+      parameters:
+        - name: post_id
+          in: path
+          type: string
+          required: true
+      security:
+        - Secured: []
+      responses:
+        '200':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          schema:
+            $ref: '#/definitions/HTTPValidationError'
+    patch:
+      produces:
+        - application/json
+      operationId: update_post_posts__post_id__patch
+      parameters:
+        - in: path
+          name: post_id
+          type: string
+          required: true
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreatePost'
+      security:
+        - Secured: []
+      responses:
+        '200':
+          description: Successful Response
+          schema:
+            $ref: '#/definitions/CreatePost'
+        '422':
+          description: Validation Error
+          schema:
+            $ref: '#/definitions/HTTPValidationError'
+  /posts:
+    get:
+      produces:
+        - application/json
+      operationId: get_posts_posts__get
+      security:
+        - Secured: []
+      responses:
+        '200':
+          description: Successful Response
+          schema:
+            $ref: '#/definitions/CreatePost'
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: create_post_posts__post
+      security:
+        - Secured: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/CreatePost'
+          required: true
+      responses:
+        '200':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          schema:
+            $ref: '#/definitions/HTTPValidationError'
+definitions:
+  CreatePost:
+    properties:
+      title:
+        type: string
+      date_time:
+        type: string
+      address:
+        type: string
+      price:
+        type: number
+      organization_id:
+        type: string
+      organization_stripe_account_id:
+        type: string
+      image:
+        type: string
+  HTTPValidationError:
+    type: object
+    properties:
+      detail:
+        type: array
+        items:
+          type: string

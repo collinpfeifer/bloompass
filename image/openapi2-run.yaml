@@ -1,0 +1,117 @@
+swagger: '2.0'
+info:
+  title: adfluent-image-api
+  description: Image API
+  version: 1.0.0
+schemes:
+  - https
+produces:
+  - application/json
+x-google-backend:
+  address: 'https://adfluent-image-service-y5vytibjqq-uc.a.run.app'
+securityDefinitions:
+  Secured:
+    authorizationUrl: ''
+    flow: 'implicit'
+    type: 'oauth2'
+    # The value below should be unique
+    x-google-issuer: 'adfluent-api-gateway-auth@adfluent.iam.gserviceaccount.com'
+    x-google-jwks_uri: 'https://www.googleapis.com/service_accounts/v1/jwk/adfluent-api-gateway-auth@adfluent.iam.gserviceaccount.com'
+    # Optional. Replace YOUR-CLIENT-ID with your client ID
+    x-google-audiences: '102839281963594688405'
+paths:
+  /images/upload:
+    post:
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - name: image
+          in: formData
+          required: true
+          type: string
+      security:
+        - Secured: []
+      operationId: postImage
+      responses:
+        '201':
+          description: Successful image post
+          schema:
+            $ref: '#/definitions/PostImage'
+        '400':
+          description: Error posting
+          schema:
+            $ref: '#/definitions/Error'
+  /images/{id}:
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      operationId: getImage
+      responses:
+        '200':
+          description: Successful image get
+          schema:
+            $ref: '#/definitions/GetImage'
+        '404':
+          description: Error getting
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      security:
+        - Secured: []
+      operationId: deleteImage
+      responses:
+        '200':
+          description: Successful image delete
+          schema:
+            $ref: '#/definitions/DeleteImage'
+        '404':
+          description: Error deleting
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  PostImage:
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+      imageId:
+        type: string
+  GetImage:
+    properties:
+      success:
+        type: boolean
+      image:
+        type: string
+  DeleteImage:
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+  Error:
+    properties:
+      statusCode:
+        type: integer
+      message:
+        type: string
+      error:
+        type: string

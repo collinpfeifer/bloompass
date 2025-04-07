@@ -1,0 +1,281 @@
+swagger: '2.0'
+info:
+  title: adfluent-stripe-api
+  description: Stripe API
+  version: 1.0.0
+schemes:
+  - https
+produces:
+  - application/json
+x-google-backend:
+  address: 'https://adfluent-stripe-service-y5vytibjqq-uc.a.run.app'
+securityDefinitions:
+  Secured:
+    authorizationUrl: ''
+    flow: 'implicit'
+    type: 'oauth2'
+    # The value below should be unique
+    x-google-issuer: 'adfluent-api-gateway-auth@adfluent.iam.gserviceaccount.com'
+    x-google-jwks_uri: 'https://www.googleapis.com/service_accounts/v1/jwk/adfluent-api-gateway-auth@adfluent.iam.gserviceaccount.com'
+    # Optional. Replace YOUR-CLIENT-ID with your client ID
+    x-google-audiences: '102839281963594688405'
+paths:
+  /accounts:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/CreateAccount'
+      security:
+        - Secured: []
+      operationId: createAccount
+      responses:
+        '201':
+          description: Successful Update account
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Error'
+  /accounts/{id}:
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+      security:
+        - Secured: []
+      operationId: getAccount
+      responses:
+        '201':
+          description: Successful get account
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+      security:
+        - Secured: []
+      operationId: deleteAccount
+      responses:
+        '201':
+          description: Successful delete account
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Error'
+  /accounts/links:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/CreateAccountLink'
+      security:
+        - Secured: []
+      operationId: createAccountLink
+      responses:
+        '201':
+          description: Successful create account link
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Error'
+  /login/links:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/CreateLoginLink'
+      security:
+        - Secured: []
+      operationId: createLoginLink
+      responses:
+        '201':
+          description: Successful create login link
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Error'
+  /paymentintents:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/CreatePaymentIntent'
+      security:
+        - Secured: []
+      operationId: create payment intent
+      responses:
+        '201':
+          description: Successful create payment intent
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Error'
+  /checkoutsessions:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/CreateCheckoutSession'
+      operationId: create checkout session
+      responses:
+        '201':
+          description: Successful create checkout session
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Error'
+  /checkoutsessions/{id}:
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+      security:
+        - Secured: []
+      operationId: get checkout session
+      responses:
+        '200':
+          description: Successful Update checkout session
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Error'
+  /links/{id}/clicks:
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+      operationId: click link
+      responses:
+        '200':
+          description: Successful Update link
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Error'
+  /webhook:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      operationId: handle webhook
+      responses:
+        '200':
+          description: Successful checkout
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+  CreateAccount:
+    properties:
+      type:
+        type: string
+      country:
+        type: string
+  CreateAccountLink:
+    properties:
+      account:
+        type: string
+      returnUrl:
+        type: string
+      refreshUrl:
+        type: string
+  CreateLoginLink:
+    properties:
+      accountId:
+        type: string
+  CreatePaymentIntent:
+    properties:
+      amount:
+        type: string
+      accountId:
+        type: string
+  CreateCheckoutSession:
+    properties:
+      name:
+        type: string
+      price:
+        type: string
+      accountId?:
+        type: string
+      successUrl:
+        type: string
+      organizationStripeId:
+        type: string
+      postId:
+        type: string
+      image:
+        type: string
+      address:
+        type: string
+      dateTime:
+        type: string
+      cancelUrl:
+        type: string
+  Error:
+    properties:
+      statusCode:
+        type: integer
+      message:
+        type: string
+      error:
+        type: string

@@ -1,0 +1,1 @@
+# amethyst-pass-microservice-template

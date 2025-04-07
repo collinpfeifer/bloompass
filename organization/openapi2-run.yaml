@@ -1,0 +1,235 @@
+﻿swagger: '2.0'
+info:
+  title: adfluent-organization-api
+  description: Organization API
+  version: 1.0.0
+schemes:
+  - https
+produces:
+  - application/json
+x-google-backend:
+  address: 'https://adfluent-organization-service-y5vytibjqq-uc.a.run.app'
+securityDefinitions:
+  Secured:
+    authorizationUrl: ''
+    flow: 'implicit'
+    type: 'oauth2'
+    # The value below should be unique
+    x-google-issuer: 'adfluent-api-gateway-auth@adfluent.iam.gserviceaccount.com'
+    x-google-jwks_uri: 'https://www.googleapis.com/service_accounts/v1/jwk/adfluent-api-gateway-auth@adfluent.iam.gserviceaccount.com'
+    # Optional. Replace YOUR-CLIENT-ID with your client ID
+    x-google-audiences: '102839281963594688405'
+paths:
+  /organizations/{id}:
+    delete:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      security:
+        - Secured: []
+      operationId: deleteOrganization
+      responses:
+        '200':
+          description: Successful delete organization
+          schema:
+            $ref: '#/definitions/GetOrganization'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+    patch:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/SignUpOrganization'
+          x-examples:
+            application/json: "{\n\"name\": \"Collin Pfeifer\",\n\"email\": \"collin@google.com\",\n\"password\": \"ball\"}"
+      security:
+        - Secured: []
+      operationId: updateOrganization
+      responses:
+        '201':
+          description: Successful Update organization
+          schema:
+            $ref: '#/definitions/GetOrganization'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+    get:
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: get organization
+          required: true
+          type: string
+      security:
+        - Secured: []
+      operationId: getOrganization
+      responses:
+        '200':
+          description: Successful delete organization
+          schema:
+            $ref: '#/definitions/GetOrganization'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+  /auth/signup:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/SignUpOrganization'
+          x-examples:
+            application/json: "{\n\"name\": \"Collin Pfeifer\",\n\"email\": \"+!3179955113\",\n\"password\": \"ball\"}"
+      operationId: signUpOrganization
+      responses:
+        '201':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model4'
+        '400':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model2'
+  /auth/login:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: false
+          schema:
+            $ref: '#/definitions/LoginOrganization'
+          x-examples:
+            application/json: "{\n\"email\": \"+!3179955113\",\n\"password\": \"ball\"}"
+      operationId: loginOrganization
+      responses:
+        '201':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model4'
+        '400':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model2'
+  /auth/logout:
+    get:
+      produces:
+        - application/json
+      parameters: []
+      security:
+        - Secured: []
+      operationId: logoutOrganization
+      responses:
+        '200':
+          description: Successful logout
+          schema: {}
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+  /auth/refresh:
+    get:
+      produces:
+        - application/json
+      parameters: []
+      security:
+        - Secured: []
+      operationId: refreshOrganizationTokens
+      responses:
+        '200':
+          description: Successful token refresh
+          schema:
+            $ref: '#/definitions/Model4'
+        '401':
+          description: Definition generated from Swagger Inspector
+          schema:
+            $ref: '#/definitions/Model6'
+definitions:
+  SignUpOrganization:
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+  GetOrganization:
+    properties:
+      id:
+        type: string
+      organizationNumber:
+        type: string
+      createdAt:
+        type: string
+      updatedAt:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      refreshToken:
+        type: string
+      image:
+        type: string
+      balance:
+        type: number
+  LoginOrganization:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+  Model2:
+    properties:
+      statusCode:
+        type: integer
+        format: int32
+      message:
+        type: string
+      error:
+        type: string
+  Model4:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+  Model6:
+    properties:
+      statusCode:
+        type: integer
+        format: int32
+      message:
+        type: string

@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model Subscriber {
+  id                 String   @id @unique @default(uuid())
+  subscriberNumber   BigInt   @unique @default(autoincrement())
+  email              String   @unique
+  password           String
+  image              String  @default("") //whatever this is
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  name               String   @unique
+  accountAuthToken   String   
+  refreshToken       String?
+}
