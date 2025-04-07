@@ -1,0 +1,122 @@
+version: "3.8"
+
+services:
+  # Database service
+  cockroachdb:
+    image: cockroachdb/cockroach:latest
+    command: start-single-node --insecure
+    ports:
+      - "26257:26257"
+      - "8080:8080"
+    volumes:
+      - cockroach-data:/cockroach/cockroach-data
+    healthcheck:
+      test: ["CMD", "cockroach", "node", "status", "--insecure"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Microservices
+  image-service:
+    build:
+      context: ./image
+      dockerfile: Dockerfile
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable
+    restart: unless-stopped
+
+  link-service:
+    build:
+      context: ./link
+      dockerfile: Dockerfile
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable
+    restart: unless-stopped
+
+  organization-service:
+    build:
+      context: ./organizatin
+      dockerfile: Dockerfile
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable
+    restart: unless-stopped
+
+  pass-service:
+    build:
+      context: ./pass
+      dockerfile: Dockerfile
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable
+    restart: unless-stopped
+
+  post-service:
+    build:
+      context: ./post
+      dockerfile: Dockerfile
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable
+    restart: unless-stopped
+
+  stripe-service:
+    build:
+      context: ./stripe
+      dockerfile: Dockerfile
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable
+    restart: unless-stopped
+
+  subscription-service:
+    build:
+      context: ./subscription
+      dockerfile: Dockerfile
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable
+    restart: unless-stopped
+
+  ui-service:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: ./user
+      dockerfile: Dockerfile
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable
+    restart: unless-stopped
+
+volumes:
+  cockroach-data:
